@@ -1,0 +1,7 @@
+{
+    "jwtPrivateKey" : "BuntySecreteKey",
+    "dbConnection" : "mongodb+srv://Shamli_054:shamli2612@crudcluster-yytf3.mongodb.net/audioKraft?retryWrites=true&w=majority",
+    "awsS3AccessKeyId" : "AKIAIWIR57RBZ3LMZQJQ",
+    "awsS3secretAccessKey" : "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",
+    "awsS3region" : "ap-south-1"
+}

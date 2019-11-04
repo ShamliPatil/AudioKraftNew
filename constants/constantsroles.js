@@ -1,0 +1,8 @@
+module.exports = Object.freeze({
+    ROLE_SUPERADMIN: 'ROLE_SUPERADMIN',
+    ROLE_DEALER: 'ROLE_DEALER',
+    ROLE_ADMIN: 'ROLE_ADMIN',
+    ROLE_DELIVERYBOY: ' ROLE_DELIVERYBOY'
+    // ROLE_ADMIN : 'ROLE_ADMIN',
+    // ROLE_DBA : 'ROLE_DBA'
+});

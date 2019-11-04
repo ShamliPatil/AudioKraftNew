@@ -1,0 +1,7 @@
+{
+    "jwtPrivateKey" : "AudioKraft_secretKey",
+    "dbConnection" : "AudioKraft_databaseConnection",
+    "awsS3AccessKeyId" : "ds_awsS3AccessKeyId",
+    "awsS3secretAccessKey" : "ds_awsS3secretAccessKey",
+    "awsS3region" : "ds_awsS3Region"
+}
