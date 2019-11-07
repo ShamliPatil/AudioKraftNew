@@ -7,28 +7,30 @@ var dealershipSchema = new Schema({
         type:String,
         required:true,
         minlength : 2,
-        maxlength : 30
+        maxlength : 100
     },
-    addresses:{
+    addresses:[{
         type :[mongoose.Schema.Types.ObjectId],
         required :true,
+        ref:'UserAddress',
         default:[]
-    },
-    brands:{
+    }],
+    brands:[{
         type:[mongoose.Schema.Types.ObjectId],
         required:true,
+        ref:'Brand',
         default:[]
-    },
+    }],
     contactNo:{
-        type:Number,
+        type:String,
         required:true,
         minlength : 10,
         maxlength : 15
     },
-    users:{
-        type:[mongoose.Schema.Types.ObjectId],
-        required:false
-    },
+    // users:{
+    //     type:[mongoose.Schema.Types.ObjectId],
+    //     required:false
+    // },
     city:{
          type:String,
         required:true,
@@ -50,23 +52,32 @@ var dealershipSchema = new Schema({
     }
 },{ timestamps: true });
 
-const Dealership = mongoose.model('User',dealershipSchema);
+const Dealership = mongoose.model('Dealership',dealershipSchema);
 
 function validateDealership(dealership){
     const schema = Joi.object().keys({
-        imei : Joi.string().min(10).max(20).trim().required(),
-        firstName : Joi.string().min(2).max(100).trim().required(),
-        lastName : Joi.string().min(2).max(100).trim().required(),
-        email : Joi.string().min(2).trim().max(30).email().required(),
-        password : Joi.string().min(5).trim().max(30).required(),
-        dealerName:Joi.string().min(3).trim().max(30).required(),
-        city : Joi.string().required()
+        dealershipName : Joi.string().min(2).max(100).trim().required(),
+        addresses : Joi.array().required(),
+        brands : Joi.array().required(),
+        city : Joi.string().min(2).trim().max(30).required(),
+        contactNo:Joi.string().min(10).max(15).required()
+       // users:Joi.objectId()
 
     })
+}
+    function validateDealershipUpdate(dealership){
+        const schema = Joi.object().keys({
+            dealershipName : Joi.string().min(2).max(100).trim().required(),
+            city : Joi.string().min(2).trim().max(30).required(),
+            contactNo:Joi.string().min(10).max(15).required()
+           // users:Joi.objectId()
+    
+        })
    return { error} = schema.validate(dealership);
     //return Joi.validate(dealership, schema);
 }
 
 module.exports.Dealership = Dealership;
 module.exports.validate = validateDealership;
+module.exports.validateDealershipUpdate = validateDealershipUpdate;
 module.exports.dealershipSchema = dealershipSchema;

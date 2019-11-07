@@ -15,6 +15,7 @@ const productcolorcombination = require('../routes/productcolorcombination');
 const manageStock = require('../routes/managestock');
 const fileupload = require('../routes/file-upload');
 const role = require('../routes/role');
+const dealership = require('../routes/dealership');
 
 
 const express = require('express');
@@ -38,6 +39,7 @@ module.exports = function(app){
     app.use('/api/ManageStock',manageStock);
     app.use('/api/file-upload',fileupload);
     app.use('/api/roles', role);
+    app.use('/api/dealer',dealership);
     
     app.use(error);
 }
