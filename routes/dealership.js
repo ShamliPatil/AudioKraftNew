@@ -35,4 +35,14 @@ router.get('/getAllDealers', auth, async (req, res) => {
         dealer = await dealer.save();
         return res.status(200).send(dealer);
 });
+router.patch('/enabledBrandById', auth, async (req, res) => {
+    const { error } = validateBrandEnabled(req.body); 
+    if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
+    let brand = await Brand.findOne({_id:req.body.brandId});
+    if(!brand) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found please provide userId.' });
+    brand.enabled=req.body.enabled;
+    brand.updatedBy = req.user._id;
+    brand = await brand.save();
+    return res.status(200).send(brand);
+});
 module.exports = router;
