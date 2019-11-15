@@ -37,8 +37,7 @@ var userSchema = new Schema({
     },
     assignDealer:{
        type:mongoose.Schema.Types.ObjectId,
-       minlength : 2,
-       maxlength : 30,
+       ref:'Dealership',
        required:false
     },
     userName:{
@@ -71,10 +70,15 @@ var userSchema = new Schema({
         minlength : 10,
         maxlength : 15
     },
+    defaultAddress:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'UserAddress',
+        required:false
+    },
     isApproved:{
         type:Boolean,
         required:false,
-        default:true
+        default:false
     },
     userType:{
         type:String,
@@ -87,7 +91,7 @@ var userSchema = new Schema({
     enabled:{
         type:Boolean,
         required:false,
-        default:true
+        default:false
     },
    createdBy : {
         type : mongoose.Schema.Types.ObjectId,
@@ -109,8 +113,9 @@ const User = mongoose.model('User',userSchema);
         email : Joi.string().min(10).trim().max(255).email().required(),
         password : Joi.string().min(5).trim().max(100).required(),
         dealership : Joi.string().min(2).trim().max(30).required(),
-        assignDealer: Joi.string().min(2).trim().max(30),
-        city : Joi.string().min(2).max(30).trim().required()
+        assignDealer: Joi.objectId(),
+        city : Joi.string().min(2).max(30).trim().required(),
+        contactNo :  Joi.string().min(10).max(15).trim().required()
     })
     return {error} = schema.validate(dealerUser);
     //return const{ error, value } = schema.validate({user});
@@ -126,7 +131,7 @@ function validateUserForAudiokraft(audokraftUser){
         reference:Joi.string().min(2).trim().max(30).required(),
         city : Joi.string().min(3).max(30).trim().required(),
         role: Joi.string().required(),
-        contactNo :  Joi.number().min(10).max(15).trim(),
+        contactNo :  Joi.string().min(10).max(15).trim().required(),
         imei : Joi.string().min(10).max(20).trim(),
     })
     return {error} = schema.validate(audokraftUser);
@@ -139,10 +144,19 @@ function validateUserForUpdate(user){
     })
     return {error} = schema.validate(user);
 }
+function validateforDefaultAddress(user){
+    const schema =Joi.object().keys({
+        userId:Joi.objectId().required(),
+        defaultAddress:Joi.objectId().required()
+    })
+    return {error} = schema.validate(user);
+}
+
 
 
 module.exports.User = User;
 module.exports.validateForDealer = validateUserForDealer;
 module.exports.validateForAudiokraft=validateUserForAudiokraft;
 module.exports.validateUserForUpdate=validateUserForUpdate;
+module.exports.validateforDefaultAddress = validateforDefaultAddress;
 module.exports.userSchema = userSchema;

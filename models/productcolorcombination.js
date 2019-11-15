@@ -83,5 +83,5 @@ function validateproductColorCombination(productColorCombination){
     //return Joi.validate(productColorCombination, schema);
 }
 
-module.exports.productcolorcombination = ProductColorCombination;
+module.exports.ProductColorCombination = ProductColorCombination;
 module.exports.validate = validateproductColorCombination;

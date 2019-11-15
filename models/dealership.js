@@ -67,17 +67,27 @@ function validateDealership(dealership){
 }
     function validateDealershipUpdate(dealership){
         const schema = Joi.object().keys({
-            dealershipName : Joi.string().min(2).max(100).trim().required(),
-            city : Joi.string().min(2).trim().max(30).required(),
-            contactNo:Joi.string().min(10).max(15).required()
+            dealershipName : Joi.string().min(2).max(100).trim(),
+            city : Joi.string().min(2).trim().max(30),
+            contactNo:Joi.string().min(10).max(15),
+            dealerId:Joi.objectId().required()
            // users:Joi.objectId()
     
         })
    return { error} = schema.validate(dealership);
     //return Joi.validate(dealership, schema);
 }
+function validateDealerEnabled(dealership){    
+    const schema =Joi.object().keys({
+    enabled : Joi.boolean().required(),
+    dealerId:Joi.objectId().required()
+    })
+    return { error} = schema.validate(dealership);
+    //return Joi.validate(brand, schema);
+};
 
 module.exports.Dealership = Dealership;
 module.exports.validate = validateDealership;
 module.exports.validateDealershipUpdate = validateDealershipUpdate;
+module.exports.validateDealerEnabled = validateDealerEnabled;
 module.exports.dealershipSchema = dealershipSchema;

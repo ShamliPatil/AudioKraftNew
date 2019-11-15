@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
 const _ = require('lodash');
-const { User, validateForDealer,validateForAudiokraft,validateUserForUpdate } =  require('../models/user');
+const { User, validateForDealer,validateForAudiokraft,validateUserForUpdate,validateforDefaultAddress} =  require('../models/user');
+const { UserAddress }=require('../models/useraddress');
 const { Role} =  require('../models/role');
 const roles = require('../constants/constantsroles');
 const usertypes = require('../constants/constantsusertypes');
@@ -17,7 +19,7 @@ router.post('/createUserForDealer', async (req, res) => {
     
     user = await User.findOne({email: req.body.email}).select('email');
     if(user) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'Email already exist.' });
-    user = new User(_.pick(req.body, ['firstName', 'lastName','email', 'city','password','imei','reference']));
+    user = new User(_.pick(req.body, ['firstName', 'lastName','email', 'city','password','imei','reference','assignDealer','dealership','contactNo']));
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);         
     var roleArray = [roles.ROLE_DEALER];
@@ -46,6 +48,19 @@ router.post('/createUserForAudiokraft', async (req, res) => {
     user = await user.save();    
     return res.status(201).send({statusCode : 201, message : 'Successfully Registered.'});
 });
+router.post('/setDefaultAddresstoUser', auth,async (req, res) => {
+    const {error} = validateforDefaultAddress(req.body); 
+    if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
+    let user = await User.findOne({_id:req.body.userId});
+    if(!user) return res.status(404).send({ statusCode : 404, error : 'Bad Request' , message: 'User not found'});
+    if(!mongoose.Types.ObjectId.isValid(req.body.defaultAddress)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid dealerId.'});
+    const useraddress = await UserAddress.findOne({_id:req.body.defaultAddress});
+    if(!useraddress) return res.status(400).send({statusCode:404,error:'Bad Request',message:'useraddress not found'});
+    user.defaultAddress = useraddress.id;
+    user = await user.save();  
+    return res.status(201).send({statusCode : 201, message : 'Successfully dealer assign to user'});
+    
+});
 
 router.patch('/enableOrApproveUser', auth, async (req, res) => {
     const { error } = validateUserForUpdate(req.body); 
@@ -58,5 +73,13 @@ router.patch('/enableOrApproveUser', auth, async (req, res) => {
     user = await user.save();
     return res.status(200).send(user);
 });
+router.get('/getAllUsersByDealerId', auth, async (req, res) => {
+    let user =  await User.find({assignDealer : req.query.dealerId });
+    if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found.' }); //Not Found
+    return res.status(200).send(user);
+  
+  
+  });
+
 
 module.exports = router;

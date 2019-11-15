@@ -1,7 +1,5 @@
 const _ = require('lodash');
-const { Dealership , validate ,validateDealershipUpdate} = require('../models/dealership');
-const  {User} =  require('../models/user'); 
-const { Brand } = require('../models/brand');
+const { Dealership , validate ,validateDealershipUpdate,validateDealerEnabled} = require('../models/dealership');
 const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
@@ -34,6 +32,16 @@ router.get('/getAllDealers', auth, async (req, res) => {
         dealer.updatedBy = req.user._id;
         dealer = await dealer.save();
         return res.status(200).send(dealer);
+});
+router.patch('/enabledDealerById', auth, async (req, res) => {
+  const { error } = validateDealerEnabled(req.body); 
+  if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
+  let dealer = await Dealership.findOne({_id:req.body.dealerId});
+  if(!dealer) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Dealer not found please provide dealerId.' });
+  dealer.enabled=req.body.enabled;
+  dealer.updatedBy = req.user._id;
+  dealer = await dealer.save();
+  return res.status(200).send(dealer);
 });
 
 module.exports = router;

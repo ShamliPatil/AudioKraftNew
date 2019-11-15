@@ -44,16 +44,19 @@ router.post('/', auth, async (req, res) => {
 });
 
 router.get('/getProductColorCombination', auth, async (req, res) => {
-    const companyModelId = req.query.companyModelId;
-    const productId = req.query.productId;
+  const pageNo= parseInt(req.query.pageNo);
+  const size = parseInt(req.query.size);
+  const companyModelId = req.query.companyModelId;
+  const productId = req.query.productId;
 
+    if(pageNo < 0 ||pageNo === 0 ||size < 0 ||size === 0 || (isNaN(pageNo)) || (isNaN(size)) )return res.status(400).send("Invalid page number or Invalid size.");
     if(!mongoose.Types.ObjectId.isValid(companyModelId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid company model id.'}); 
     if(!mongoose.Types.ObjectId.isValid(productId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid product id.'}); 
 
   // find product color combinations from company id , company model id and product id
     const companyModel = await CompanyModel.findOne({ _id : companyModelId });
-    if(!companyModel) return res.status(404).send({ statusCode : 404, error : 'Not Found.' , message : 'Company Model name already added.' });
-    const productColorCombination = await ProductColorCombination.find({productId : productId, companyId : companyModel.companyId, companyModelId : companyModel.id })
+    if(!companyModel) return res.status(404).send({ statusCode : 404, error : 'Not Found.' , message : 'Company Model name not found'  });
+    const productColorCombination = await ProductColorCombination.find({productId : productId, companyId : companyModel.companyId, companyModelId : companyModel.id }).skip(size*(pageNo - 1)).limit(size);;
     if(!productColorCombination || productColorCombination.length == 0)return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Products color combination not found.' });
     return res.status(200).send({ statusCode : 200, data : productColorCombination  });
 });

@@ -3,6 +3,11 @@ const Joi = require('@hapi/joi');
 Joi.objectId = require('joi-objectid')(Joi);
 
 const userAddressSchema = new mongoose.Schema({ 
+    dealerId:{
+        type: mongoose.Schema.Types.ObjectId,
+        required:true
+
+    },
     addressTitle:{
         type: String,
         required : true,
@@ -10,7 +15,7 @@ const userAddressSchema = new mongoose.Schema({
         maxlength: 30,
     },
     contactNo:{
-        type:Number,
+        type:String,
         required:true,
         minlength : 10,
         maxlength : 15
@@ -23,13 +28,13 @@ const userAddressSchema = new mongoose.Schema({
     },
    buildingName : {
         type: String,
-        required : true,
+        required : false,
         minlength: 2,
         maxlength: 30,
     },
     area:{
         type:String,
-        required:true,
+        required:false,
         minlength:2,
         maxlength:30
     },
@@ -71,14 +76,15 @@ const UserAddress = mongoose.model('UserAddress',userAddressSchema);
 
 function validateUserAddress(userAddress){    
     const schema = Joi.object().keys({
+        dealerId:Joi.objectId().required(),
         pincode : Joi.string().min(6).max(6).required(),
         buildingName : Joi.string().min(2).max(300).required(),
-        area : Joi.string().min(2).max(30).required(),
+        area : Joi.string().min(2).max(30),
         city : Joi.string().min(2).max(30).required(),
         state : Joi.string().min(2).max(30).required(),
-        landmark : Joi.string().min(2).max(30).required(),
+        landmark : Joi.string().min(2).max(30),
         addressTitle : Joi.string().min(2).max(30).required(),
-        contactNo : Joi.number().min(10).max(15).trim()
+        contactNo : Joi.string().min(10).max(15).required()
         
     })
     return {error} = schema.validate(userAddress);
@@ -92,7 +98,9 @@ function validateUserAddressUpdate(userAddress){
         city : Joi.string().min(2).max(100),
         state : Joi.string().min(2).max(100),
         landmark : Joi.string().min(2).max(100),
-        addressId:Joi.objectId().required()
+        addressId:Joi.objectId().required(),
+        contactNo : Joi.string().min(10).max(15),
+        addressTitle : Joi.string().min(2).max(30)
        
     })
      return {error} = schema.validate(userAddress);
