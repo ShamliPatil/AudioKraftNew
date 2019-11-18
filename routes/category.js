@@ -44,6 +44,12 @@ router.get('/getCategoriesByBrandId', auth, async (req, res) => {
   return res.status(200).send(brand);
 
 });
+router.get('/getAllCategories', auth, async (req, res) => {
+  let category = await Category.find().sort('name');
+  if(!category) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Category not found.' }); //Not Found
+  return res.status(200).send(category);
+
+});
 router.patch('/updateCategoryById', auth, async (req, res) => {
     const { error } = validateCategoryUpdate(req.body); 
     if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
@@ -65,6 +71,14 @@ router.patch('/enabledCategoryById', auth, async (req, res) => {
   category.updatedBy = req.user._id;
   category = await category.save();
   return res.status(200).send(category);
+});
+router.delete('/deleteCategoryByCategoryId', auth, async (req, res) => {
+  categoryId = req.query.categoryId;
+  if(!mongoose.Types.ObjectId.isValid(categoryId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid categoryId.'});
+  let category =  await Category.findByIdAndDelete({ _id :categoryId });
+  if(!category) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Category not found.' }); //Not Found
+  return res.status(200).send({statusCode : 200,message : 'Category Successfuly delete.' });
+
 });
 
 module.exports = router;

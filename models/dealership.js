@@ -27,10 +27,6 @@ var dealershipSchema = new Schema({
         minlength : 10,
         maxlength : 15
     },
-    // users:{
-    //     type:[mongoose.Schema.Types.ObjectId],
-    //     required:false
-    // },
     city:{
          type:String,
         required:true,

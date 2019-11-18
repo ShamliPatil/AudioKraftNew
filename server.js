@@ -11,5 +11,5 @@ require('./startup/db')();
 require('./startup/validation')();
 require('./startup/prod')(app);
 
-const port = process.env.PORT || 2000;
+const port = process.env.PORT || 4800;
 app.listen(port, () => console.log(`Server Listening on port ${port}...`));

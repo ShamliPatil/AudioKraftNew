@@ -134,6 +134,29 @@ function validateProductimgUrl(product){
     return { error} = schema.validate(product);
     //return Joi.validate(brand, schema);
 };
+function validateProductForUpdate(product){    
+    const schema =Joi.object().keys({
+        name : Joi.string().min(2).max(30),
+        description : Joi.string().min(2).max(1024),
+        imgUrl : Joi.array(),
+        price : Joi.number(),
+        dealerPrice : Joi.number(),
+        quantity :Joi.number(),
+        isCustomizable : Joi.boolean(),
+        colors : Joi.array(),
+        productId:Joi.objectId().required()
+    })
+    return { error} = schema.validate(product);
+    //return Joi.validate(brand, schema);
+};
+function validateProductEnabled(brand){    
+    const schema =Joi.object().keys({
+    enabled : Joi.boolean().required(),
+    productId:Joi.objectId().required()
+    })
+    return { error} = schema.validate(brand);
+    //return Joi.validate(brand, schema);
+};
 
 
 
@@ -142,4 +165,6 @@ module.exports.validate = validateProduct;
 module.exports.validateUpadetProductSpefication=validateUpadetProductSpefication;
 module.exports.validateUpadetProductData = validateUpadetProductData;
 module.exports.validateProductimgUrl= validateProductimgUrl;
+module.exports.validateProductForUpdate = validateProductForUpdate;
+module.exports.validateProductEnabled = validateProductEnabled;
 module.exports.productSchema=productSchema;

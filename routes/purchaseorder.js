@@ -4,6 +4,7 @@ const {UserAddress} = require('../models/useraddress');
 const {  PurchaseOrder, validate} = require('../models/purchaseorder');
 const { validateSeatCover } = require('../models/seatcover');
 const auth = require('../middleware/auth');
+const status = require('../constants/constantsorderstatus');
 const express = require('express');
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.post('/', auth, async (req, res) => {
     purchaseOrder.dealer = req.user; 
     purchaseOrder.dealer.password = 'xxxxxxxxxxx';
     purchaseOrder.deliveryAddress=userAddress;
-    purchaseOrder.productColorCombinationId=req.body.productColorCombinationId  ;
+    purchaseOrder.productColorCombinationId=req.body.productColorCombinationId;
     purchaseOrder.createdBy = req.user._id;
 
     const products = req.body.products;
@@ -35,6 +36,7 @@ router.post('/', auth, async (req, res) => {
         productObject.quantity = products[i].quantity;
         productObject.majorColor = products[i].majorColor;
         productObject.minorColor = products[i].minorColor;
+        productObject.status =status.ORDER_STATUS_PENDING;
         if(product.isCustomizable){
             // check data for seatcover
             const { error } = validateSeatCover(products[i].data); 
@@ -47,9 +49,9 @@ router.post('/', auth, async (req, res) => {
     purchaseOrder.products = finalProducts;
 
  purchaseOrder = await purchaseOrder.save(); 
- const product = await Product.findOne({ _id : purchaseOrder.products.productId}).select('quantity');
+  //product = await Product.findOne({ _id : purchaseOrder.products.productId}).select('quantity');
 // if(!product) return res.status(404).send({ statusCode : 409, error : 'Not Found.' , message : 'Product not found.' });
-  purchaseOrder.products.product.quantity -= purchaseOrder.products[i].quantity;
+  //purchaseOrder.products.product.quantity -= purchaseOrder.products[i].quantity;
     return res.status(200).send({ statusCode : 200,message : 'oredr placed Successfuly .', data : purchaseOrder});
 });
 

@@ -77,9 +77,29 @@ router.get('/getAllUsersByDealerId', auth, async (req, res) => {
     let user =  await User.find({assignDealer : req.query.dealerId });
     if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found.' }); //Not Found
     return res.status(200).send(user);
-  
+  }); 
+
+  router.get('/getAllUsersForAduioKraft', auth, async (req, res) => {
+    let user =  await User.find().select('firstName lastName email contactNo role enabled');
+    if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found.' }); //Not Found
+    return res.status(200).send(user);
+  });
+
+  router.get('/getAllUsersForDealer', auth, async (req, res) => {
+    let user =  await User.find({role:"ROLE_DEALER"}).select('firstName lastName email contactNo isApproved').populate('assignDealer','dealershipName');
+    if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found.' }); //Not Found
+    return res.status(200).send(user);
+  });
+
+  router.delete('/deleteUserByUserId', auth, async (req, res) => {
+    userId = req.query.userId;
+    if(!mongoose.Types.ObjectId.isValid(userId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid UserId.'});
+    let user =  await User.findByIdAndDelete({ _id :userId });
+    if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found.' }); //Not Found
+    return res.status(200).send({statusCode : 200,message : 'User Successfuly delete.' });
   
   });
+  
 
 
 module.exports = router;

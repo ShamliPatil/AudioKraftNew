@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const mongoose = require('mongoose');
-const { Product , validate,validateProductimgUrl,validateUpadetProductSpefication,validateUpadetProductData } = require('../models/product');
+const { Product , validate,validateProductimgUrl,validateUpadetProductSpefication,validateUpadetProductData,validateProductForUpdate,validateProductEnabled} = require('../models/product');
 const  {User} =  require('../models/user'); 
 const { Category} =  require('../models/category');
 const { SubCategory} =  require('../models/subcategory');
@@ -58,7 +58,7 @@ router.post('/setImageProduct', auth, async (req, res) => {
 
 
 router.get('/getAllProducts', auth, async (req, res) => {
-  let product = await Product.find().select(['_id','name','imgUrl','subcategoryName']).sort('name');
+  let product = await Product.find().sort('name');
   if(!product) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Products not found.' }); //Not Found
   return res.status(200).send(product);
 
@@ -91,7 +91,7 @@ router.get('/getSubCategoriesAndProductsByCategoryId', auth, async (req, res) =>
 
 });
 router.patch('/updateProductEntireSpecificationsById', auth, async (req, res) => {
-    // const { error } = validateUpadetProductSpefication(req.body); 
+     const { error } = validateUpadetProductSpefication(req.body); 
     if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
     let product = await Product.findOne({_id:req.body.productId});
     if(!product) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Product not found please provide brandId.' });
@@ -103,7 +103,7 @@ router.patch('/updateProductEntireSpecificationsById', auth, async (req, res) =>
 router.patch('/updateProductKeyAndValueById', auth, async (req, res) => {
     const { error } = validateUpadetProductData(req.body); 
     if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
-   let product = await Product.findOne({'specifications.data._id':req.body.keyId});
+    let product = await Product.findOne({'specifications.data._id':req.body.keyId});
      if(!product) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Product not found please provide productId.'});
     var found = false;
     if(product.specifications.length > 0){
@@ -123,6 +123,51 @@ router.patch('/updateProductKeyAndValueById', auth, async (req, res) => {
     if(!found) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'invalid product id.' }); 
     product=await product.save();
     return res.status(200).json({statusCode: 200, statusMessage: "product Successfully Updated!",data:product});
+
+});
+router.patch('/updateProductByProductId', auth, async (req, res) => {
+  const { error } = validateProductForUpdate(req.body); 
+  if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
+  let product = await Product.findOne({_id:req.body.productId});
+   if(!product) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Product not found please provide productId.'});
+  if(product.colors && product.colors.length > 0){ // type of 
+      // for(var i = 0; i < product.colors.length; i++){
+      //       if(req.body.colors && req.body.colors.length > 0 )product.colors[i] = req.body.colors;
+         
+      //        break;
+      //     } 
+    product.colors.push(req.body.colors);
+  }else{
+    Product.colors = req.body.colors;
+  }
+          if(req.body.name && req.body.name.length > 0 )product.name = req.body.name;
+          if(req.body.description && req.body.description.length > 0 )product.description = req.body.description;
+          if(req.body.imgUrl && req.body.imgUrl.length > 0 )product.imgUrl= req.body.imgUrl;
+          if(req.body.price && req.body.price.length > 0 )product.price = req.body.price;
+          if(req.body.quantity && req.body.quantity.length > 0 )product.quantity = req.body.quantity;
+          if(req.body.isCustomizable && req.body.isCustomizable.length > 0 )product.isCustomizable = req.body.isCustomizable;
+
+          product=await product.save();
+          return res.status(200).json({statusCode: 200, statusMessage: "product Successfully Updated!",data:product});
+
+});
+
+router.patch('/enabledProductById', auth, async (req, res) => {
+  const { error } = validateProductEnabled(req.body); 
+  if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
+  let product = await Product.findOne({_id:req.body.productId});
+  if(!product) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found please provide ProductId.' });
+  product.enabled=req.body.enabled;
+  product.updatedBy = req.user._id;
+  product = await product.save();
+  return res.status(200).send(product);
+});
+router.delete('/deleteProductByProductId', auth, async (req, res) => {
+  productId = req.query.productId;
+  if(!mongoose.Types.ObjectId.isValid(productId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid ProductId.'});
+  let product =  await Product.findByIdAndDelete({ _id :productId });
+  if(!product) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Product not found.' }); //Not Found
+  return res.status(200).send({statusCode : 200,message : 'Product Successfuly delete.' });
 
 });
 

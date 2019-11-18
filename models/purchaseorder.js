@@ -5,22 +5,20 @@ const { userAddressSchema } = require('../models/useraddress');
 const {seatCoverSchema} = require('../models/seatcover');
 const { productSchema } = require('../models/product');
 const{userSchema} = require('../models/user');
+const status = require('../constants/constantsorderstatus');
 
 const purchaseOrderSchema = new mongoose.Schema({ 
-    dealer: {
-        type:userSchema,
-        required : true
-    },
     deliveryAddress: {
-            type :userAddressSchema,
+            type :mongoose.Schema.Types.ObjectId,
             required :true
     },
     products:[
         {
-            product:{type:productSchema,required:true},
+            product:{type:mongoose.Schema.Types.ObjectId,required:true},
             quantity:{type:Number,required:true},
             majorColor:{type:String,required:true,minlength:2,maxlength:100},
             minorColor:{type:String,required:true,minlength:2,maxlength:100},
+            status:{type:String, required:false, enum:[status.ORDER_STATUS_PENDING,status.ORDER_STATUS_CONFIRMED,status.ORDER_STATUS_REJECTED,status.ORDER_STATUS_DISPATCHED,status.ORDER_STATUS_DELIVERED]},
             data:{type:seatCoverSchema,required:false}
         }
     ],
@@ -44,7 +42,8 @@ const PurchaseOrder = mongoose.model('PurchaseOrder',purchaseOrderSchema);
 function validatePurchaseOrder(purchaseOrder){    
     const schema = Joi.object().keys({
         deliveryAddress: Joi.string().required(),
-        products : Joi.array().required()
+        products : Joi.array().required(),
+        status : Joi.string().valid(status.ORDER_STATUS_PENDING,status.ORDER_STATUS_CONFIRMED,status.ORDER_STATUS_REJECTED,status.ORDER_STATUS_DISPATCHED,status.ORDER_STATUS_DELIVERED)
     })
    return { error} = schema.validate(purchaseOrder);
     //return Joi.validate(purchaseOrder, schema);

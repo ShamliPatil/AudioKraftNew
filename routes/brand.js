@@ -70,5 +70,13 @@ router.patch('/enabledBrandById', auth, async (req, res) => {
     brand = await brand.save();
     return res.status(200).send(brand);
 });
+router.delete('/deleteBrandByBrandId', auth, async (req, res) => {
+  brandId = req.query.brandId;
+  if(!mongoose.Types.ObjectId.isValid(brandId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid BrandId.'});
+  let brand =  await Brand.findByIdAndDelete({ _id :brandId });
+  if(!brand) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Brand not found.' }); //Not Found
+  return res.status(200).send({statusCode : 200,message : 'Brand Successfuly delete.' });
+
+});
 
 module.exports = router;
