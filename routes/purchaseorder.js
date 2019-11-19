@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const { Product } = require('../models/product');
 const {UserAddress} = require('../models/useraddress');
-const {  PurchaseOrder, validate} = require('../models/purchaseorder');
+const {  PurchaseOrder, validate,validatePurchaseOrderforUpdateStatus} = require('../models/purchaseorder');
 const { validateSeatCover } = require('../models/seatcover');
 const auth = require('../middleware/auth');
 const status = require('../constants/constantsorderstatus');
@@ -20,6 +20,7 @@ router.post('/', auth, async (req, res) => {
     purchaseOrder.dealer = req.user; 
     purchaseOrder.dealer.password = 'xxxxxxxxxxx';
     purchaseOrder.deliveryAddress=userAddress;
+    purchaseOrder.status =status.ORDER_STATUS_PENDING;
     purchaseOrder.productColorCombinationId=req.body.productColorCombinationId;
     purchaseOrder.createdBy = req.user._id;
 
@@ -36,7 +37,7 @@ router.post('/', auth, async (req, res) => {
         productObject.quantity = products[i].quantity;
         productObject.majorColor = products[i].majorColor;
         productObject.minorColor = products[i].minorColor;
-        productObject.status =status.ORDER_STATUS_PENDING;
+       
         if(product.isCustomizable){
             // check data for seatcover
             const { error } = validateSeatCover(products[i].data); 
@@ -61,5 +62,16 @@ router.get('/getPurchaseOrderById', auth, async (req, res) => {
   if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found.' }); //Not Found
   return res.status(200).send(purchaseOrder);
 
+});
+router.patch('/updatePurchaseOrderById', auth, async (req, res) => {
+  const { error } = validatePurchaseOrderforUpdateStatus(req.body); 
+  if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
+  let purchaseOrder = await PurchaseOrder.findOne({_id:req.body.purchaseOrderId});
+  if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found please provide purchaseOrderId.' });
+
+   if(req.body.status && req.body.status.length > 0 ) purchaseOrder.status = req.body.status;
+   purchaseOrder.updatedBy = req.user._id;
+   purchaseOrder = await purchaseOrder.save();
+  return res.status(200).send(purchaseOrder);
 });
 module.exports = router;

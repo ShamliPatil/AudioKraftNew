@@ -167,7 +167,6 @@ function validateSeatCover(seatCover){
      return { error} = schema.validate(seatCover);
     //return Joi.validate(seatCover, schema);
 }
-
 module.exports.SeatCover = SeatCover;
 module.exports.validateSeatCover = validateSeatCover;
 module.exports.seatCoverSchema=seatCoverSchema;

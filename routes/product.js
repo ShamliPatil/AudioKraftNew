@@ -130,25 +130,18 @@ router.patch('/updateProductByProductId', auth, async (req, res) => {
   if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
   let product = await Product.findOne({_id:req.body.productId});
    if(!product) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Product not found please provide productId.'});
-  if(product.colors && product.colors.length > 0){ // type of 
-      // for(var i = 0; i < product.colors.length; i++){
-      //       if(req.body.colors && req.body.colors.length > 0 )product.colors[i] = req.body.colors;
-         
-      //        break;
-      //     } 
-    product.colors.push(req.body.colors);
-  }else{
-    Product.colors = req.body.colors;
-  }
-          if(req.body.name && req.body.name.length > 0 )product.name = req.body.name;
-          if(req.body.description && req.body.description.length > 0 )product.description = req.body.description;
-          if(req.body.imgUrl && req.body.imgUrl.length > 0 )product.imgUrl= req.body.imgUrl;
-          if(req.body.price && req.body.price.length > 0 )product.price = req.body.price;
-          if(req.body.quantity && req.body.quantity.length > 0 )product.quantity = req.body.quantity;
-          if(req.body.isCustomizable && req.body.isCustomizable.length > 0 )product.isCustomizable = req.body.isCustomizable;
-
-          product=await product.save();
-          return res.status(200).json({statusCode: 200, statusMessage: "product Successfully Updated!",data:product});
+  
+          
+      if(req.body.colors) product.colors= req.body.colors;
+      if(req.body.name && req.body.name.length > 0 )product.name = req.body.name;
+      if(req.body.description && req.body.description.length > 0 )product.description = req.body.description;
+      if(req.body.imgUrl && req.body.imgUrl.length > 0 )product.imgUrl= req.body.imgUrl;
+      if(req.body.price)product.price = req.body.price;
+      if(req.body.dealerPrice)product.dealerPrice = req.body.dealerPrice;
+      if(req.body.quantity)product.quantity = req.body.quantity;
+      if(req.body.isCustomizable)product.isCustomizable = req.body.isCustomizable;
+       product=await product.save();
+       return res.status(200).json({statusCode: 200, statusMessage: "product Successfully Updated!",data:product});
 
 });
 
