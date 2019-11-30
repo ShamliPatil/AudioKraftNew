@@ -29,7 +29,7 @@ const productSchema = new mongoose.Schema({
         ref: 'SubCategory',
         required : true,
     },
-     categoryName:{
+    categoryName:{
         type: String,
         required : true,
     },
