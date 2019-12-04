@@ -56,8 +56,8 @@ router.patch('/updateBrandById', auth, async (req, res) => {
      if(req.body.description && req.body.description.length > 0 )  brand.description = req.body.description; 
      if(req.body.imgUrl && req.body.imgUrl.length > 0 ) brand.imgUrl = req.body.imgUrl;
      if(req.body.categories && req.body.categories.length > 0 )  brand.categories = req.body.categories;
-    brand.updatedBy = req.user._id;
-    brand = await brand.save();
+     brand.updatedBy = req.user._id;
+     brand = await brand.save();
     return res.status(200).send(brand);
 });
 router.patch('/enabledBrandById', auth, async (req, res) => {

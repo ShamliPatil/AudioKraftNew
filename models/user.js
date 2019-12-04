@@ -107,7 +107,7 @@ const User = mongoose.model('User',userSchema);
 
  function validateUserForDealer(dealerUser){
     const schema =Joi.object().keys({
-        imei : Joi.string().min(10).max(20).trim(),
+        imei : Joi.string().min(10).max(20).trim().required(),
         firstName : Joi.string().min(2).max(30).trim().required(),
         lastName : Joi.string().min(2).max(30).trim().required(),
         email : Joi.string().min(10).trim().max(255).email().required(),

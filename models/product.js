@@ -144,6 +144,9 @@ function validateProductForUpdate(product){
         quantity :Joi.number(),
         isCustomizable : Joi.boolean(),
         colors : Joi.array(),
+        subcategoryId : Joi.objectId(),
+        categoryId : Joi.objectId(),
+        brandId : Joi.objectId(),
         productId:Joi.objectId().required()
     })
     return { error} = schema.validate(product);

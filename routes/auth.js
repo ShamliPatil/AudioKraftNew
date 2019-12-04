@@ -26,13 +26,13 @@ router.post('/', async (req, res) => {
             if(!dealer) return res.status(400).send({statusCode:404,error:'Bad Request',message:'Dealer not found'});
             // check dealer is disable or not
             if(dealer.enabled == false) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'Dealer Not enabled plaese contact Admin.' });
+            //compare user imei with req.body iemi
+            if(new String(user.imei).valueOf()  != new String(req.body.imei).valueOf()) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'Invalid Device plaese contact Admin.' });
         }
 
     }
    
-    //compare user imei with req.body iemi
-    if(new String(user.imei).valueOf()  != new String(req.body.imei).valueOf()) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'Invalid Device plaese contact Admin.' });
-    
+  
     if(user.enabled == false) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'User Not enabled plaese contact Admin.' });
     if(user.isApproved == false) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'User Not enabled plaese contact Admin.' });
 

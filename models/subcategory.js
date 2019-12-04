@@ -66,6 +66,8 @@ function validateSubCategoryUpdate(subcategory){
         name : Joi.string().min(2).max(100),
         imgUrl: Joi.string(),
         description : Joi.string().min(2).max(1024),
+        categoryId : Joi.objectId(),
+        brandId : Joi.objectId(),
         subcategoryId:Joi.objectId().required()
     })
      return { error} = schema.validate(subcategory);

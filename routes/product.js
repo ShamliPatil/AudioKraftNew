@@ -140,6 +140,9 @@ router.patch('/updateProductByProductId', auth, async (req, res) => {
       if(req.body.dealerPrice)product.dealerPrice = req.body.dealerPrice;
       if(req.body.quantity)product.quantity = req.body.quantity;
       if(req.body.isCustomizable)product.isCustomizable = req.body.isCustomizable;
+      if(req.body.subcategoryId)product.subcategoryId = req.body.subcategoryId;
+      if(req.body.categoryId)product.categoryId = req.body.categoryId;
+      if(req.body.brandId)product.brandId = req.body.brandId;
        product=await product.save();
        return res.status(200).json({statusCode: 200, statusMessage: "product Successfully Updated!",data:product});
 

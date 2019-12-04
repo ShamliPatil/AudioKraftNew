@@ -52,6 +52,8 @@ router.patch('/updateSubCategoryById', auth, async (req, res) => {
   if(req.body.name && req.body.name.length > 0 ) subcategory.name = req.body.name;
   if(req.body.description && req.body.description.length > 0 )  subcategory.description = req.body.description; 
   if(req.body.imgUrl && req.body.imgUrl.length > 0 ) subcategory.imgUrl = req.body.imgUrl;
+  if(req.body.categoryId)subcategory.categoryId = req.body.categoryId;
+  if(req.body.brandId)subcategory.brandId = req.body.brandId;
   subcategory = await subcategory.save();
   return res.status(200).send(subcategory);
 });
