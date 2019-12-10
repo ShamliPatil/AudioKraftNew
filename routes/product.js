@@ -129,9 +129,7 @@ router.patch('/updateProductByProductId', auth, async (req, res) => {
   const { error } = validateProductForUpdate(req.body); 
   if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
   let product = await Product.findOne({_id:req.body.productId});
-   if(!product) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Product not found please provide productId.'});
-  
-          
+   if(!product) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Product not found please provide productId.'});     
       if(req.body.colors) product.colors= req.body.colors;
       if(req.body.name && req.body.name.length > 0 )product.name = req.body.name;
       if(req.body.description && req.body.description.length > 0 )product.description = req.body.description;
@@ -139,10 +137,10 @@ router.patch('/updateProductByProductId', auth, async (req, res) => {
       if(req.body.price)product.price = req.body.price;
       if(req.body.dealerPrice)product.dealerPrice = req.body.dealerPrice;
       if(req.body.quantity)product.quantity = req.body.quantity;
-      if(req.body.isCustomizable)product.isCustomizable = req.body.isCustomizable;
       if(req.body.subcategoryId)product.subcategoryId = req.body.subcategoryId;
       if(req.body.categoryId)product.categoryId = req.body.categoryId;
       if(req.body.brandId)product.brandId = req.body.brandId;
+      product.isCustomizable = req.body.isCustomizable;
        product=await product.save();
        return res.status(200).json({statusCode: 200, statusMessage: "product Successfully Updated!",data:product});
 

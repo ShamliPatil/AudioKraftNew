@@ -9,7 +9,6 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/', auth, async (req, res) => {
-
     const { error } = validate(req.body); 
     if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
 
