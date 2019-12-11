@@ -3,6 +3,7 @@ const { Product } = require('../models/product');
 const {UserAddress} = require('../models/useraddress');
 const {  PurchaseOrder, validate,validatePurchaseOrderforUpdateStatus} = require('../models/purchaseorder');
 const { validateSeatCover } = require('../models/seatcover');
+const {User} = require('../models/user')
 const auth = require('../middleware/auth');
 const status = require('../constants/constantsorderstatus');
 const express = require('express');
@@ -14,12 +15,15 @@ router.post('/', auth, async (req, res) => {
 
     const userAddress = await UserAddress.findOne({ _id : req.body.deliveryAddress }).select('id name dealerId dealerName pincode buildingName area city state landmark');
     if(!userAddress) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'userAddress is not valid.' }); 
+    const user = await User.findOne({ _id : req.body.dealerId });
+    if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'DealerId is not valid.' }); 
 
     let purchaseOrder = new PurchaseOrder();
     purchaseOrder.dealer = req.user; 
     purchaseOrder.dealer.password = 'xxxxxxxxxxx';
     purchaseOrder.deliveryAddress=userAddress;
-    purchaseOrder.status =status.ORDER_STATUS_PENDING;
+    purchaseOrder.dealerId = user
+   
     purchaseOrder.productColorCombinationId=req.body.productColorCombinationId;
     purchaseOrder.createdBy = req.user._id;
 
@@ -33,6 +37,7 @@ router.post('/', auth, async (req, res) => {
         if(!product)  return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : ' product id ' + products[i].productId + ' is not valid.' }); 
         // check iscustomizable if yes then check category  chekc data 
         productObject.product = product;
+        productObject.status =status.ORDER_STATUS_PENDING;
         productObject.quantity = products[i].quantity;
         productObject.majorColor = products[i].majorColor;
         productObject.minorColor = products[i].minorColor;
@@ -62,15 +67,25 @@ router.get('/getPurchaseOrderById', auth, async (req, res) => {
   return res.status(200).send(purchaseOrder);
 
 });
+router.get('/getPurchaseOrderByUserId', auth, async (req, res) => {
+  let purchaseOrder =  await PurchaseOrder.find({ userId : req.query.id });
+  //let category = await Category.find().select(['_id','name','imgUrl']).sort('name');
+  if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found.' }); //Not Found
+  return res.status(200).send(purchaseOrder);
+});
 router.patch('/updatePurchaseOrderById', auth, async (req, res) => {
   const { error } = validatePurchaseOrderforUpdateStatus(req.body); 
   if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
-  let purchaseOrder = await PurchaseOrder.findOne({_id:req.body.purchaseOrderId});
+  let purchaseOrder = await PurchaseOrder.findOne({'products._id':req.body.statusId});
   if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found please provide purchaseOrderId.' });
-
-   if(req.body.status && req.body.status.length > 0 ) purchaseOrder.status = req.body.status;
-   purchaseOrder.updatedBy = req.user._id;
-   purchaseOrder = await purchaseOrder.save();
+  if(purchaseOrder.products.length > 0){
+    for(var i = 0; i < purchaseOrder.products.length; i++){
+      if(req.body.status && req.body.status.length > 0 ) purchaseOrder.products[i].status = req.body.status;
+      purchaseOrder.products[i].date = purchaseOrder.updatedAt;
+  }
+  purchaseOrder.updatedBy = req.user._id;
+  purchaseOrder = await purchaseOrder.save();
   return res.status(200).send(purchaseOrder);
+}
 });
 module.exports = router;

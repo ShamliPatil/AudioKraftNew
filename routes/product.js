@@ -66,8 +66,10 @@ router.get('/getAllProducts', auth, async (req, res) => {
 //get products By categoryId
 router.get('/getSubCategoriesAndProductsByCategoryId', auth, async (req, res) => {
     const categoryId=req.query.categoryId;
+    const brandId=req.query.brandId ;
     if(!categoryId || categoryId.length == 0)return res.status(400).send({ statusCode : 400, error : 'Bad request' , message : 'please provide categoryId.' });
-    const subCategory = await SubCategory.find({categoryId:categoryId}).select(['_id','name','imgUrl']).sort('name').skip(10*(0)).limit(10);
+    if(!brandId || brandId.length == 0)return res.status(400).send({ statusCode : 400, error : 'Bad request' , message : 'please provide brandId.' });
+    const subCategory = await SubCategory.find({$and:[{ categoryId : categoryId },{ brandId : brandId}]}).select(['_id','name','imgUrl']).sort('name').skip(10*(0)).limit(10);
     if(!subCategory || subCategory.length == 0) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'subCategory not found.' }); 
     let productdData=[];
    // data = subCategory;
