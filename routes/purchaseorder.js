@@ -15,14 +15,14 @@ router.post('/', auth, async (req, res) => {
 
     const userAddress = await UserAddress.findOne({ _id : req.body.deliveryAddress }).select('id name dealerId dealerName pincode buildingName area city state landmark');
     if(!userAddress) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'userAddress is not valid.' }); 
-    const user = await User.findOne({ _id : req.body.dealerId });
-    if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'DealerId is not valid.' }); 
+    const user = await User.findOne({ _id : req.body.userId });
+    if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'userId is not valid.' }); 
 
     let purchaseOrder = new PurchaseOrder();
     purchaseOrder.dealer = req.user; 
     purchaseOrder.dealer.password = 'xxxxxxxxxxx';
     purchaseOrder.deliveryAddress=userAddress;
-    purchaseOrder.dealerId = user
+    purchaseOrder.userId = user
    
     purchaseOrder.productColorCombinationId=req.body.productColorCombinationId;
     purchaseOrder.createdBy = req.user._id;
@@ -61,14 +61,14 @@ router.post('/', auth, async (req, res) => {
 });
 
 router.get('/getPurchaseOrderById', auth, async (req, res) => {
-  let purchaseOrder =  await PurchaseOrder.findOne({ purchaseOrderId : req.query.id });
+  let purchaseOrder =  await PurchaseOrder.findOne({ purchaseOrderId : req.query.id }).populate('products.product');
   //let category = await Category.find().select(['_id','name','imgUrl']).sort('name');
   if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found.' }); //Not Found
   return res.status(200).send(purchaseOrder);
 
 });
 router.get('/getPurchaseOrderByUserId', auth, async (req, res) => {
-  let purchaseOrder =  await PurchaseOrder.find({ userId : req.query.id });
+  let purchaseOrder =  await PurchaseOrder.find({ userId : req.query.userId }).populate('products.product')
   //let category = await Category.find().select(['_id','name','imgUrl']).sort('name');
   if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found.' }); //Not Found
   return res.status(200).send(purchaseOrder);

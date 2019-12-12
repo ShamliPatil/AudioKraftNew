@@ -13,7 +13,7 @@ const purchaseOrderSchema = new mongoose.Schema({
             ref:'UserAddress',
             required :true
     },
-    dealerId: {
+    userId: {
         type :mongoose.Schema.Types.ObjectId,
         ref:'User',
         required :true
@@ -21,7 +21,7 @@ const purchaseOrderSchema = new mongoose.Schema({
     
     products:[
         {
-            product:{type:mongoose.Schema.Types.ObjectId,required:true},
+            product:{type:mongoose.Schema.Types.ObjectId,required:true,ref:'Product'},
             quantity:{type:Number,required:true},
             majorColor:{type:String,required:true,minlength:2,maxlength:100},
             minorColor:{type:String,required:true,minlength:2,maxlength:100},
@@ -50,7 +50,7 @@ const PurchaseOrder = mongoose.model('PurchaseOrder',purchaseOrderSchema);
 function validatePurchaseOrder(purchaseOrder){    
     const schema = Joi.object().keys({
         deliveryAddress: Joi.string().required(),
-        dealerId: Joi.string().required(),
+        userId: Joi.string().required(),
         products : Joi.array().required(),
     })
    return { error} = schema.validate(purchaseOrder);

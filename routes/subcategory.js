@@ -48,12 +48,18 @@ router.patch('/updateSubCategoryById', auth, async (req, res) => {
   if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
   let subcategory = await SubCategory.findOne({_id:req.body.subcategoryId});
   if(!subcategory) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Subcategory not found please provide subcategoryId.' });
-
+  const brand = await Brand.findOne({ _id : req.body.brandId ||subcategory.brandId  }).select('id name');
+  if(!brand) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'brandId is not valid.' });
+  const category = await Category.findOne({ _id : req.body.categoryId || subcategory.categoryId }).select('id name');
+  if(!category) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'categoryId is not valid.' });
+  
   if(req.body.name && req.body.name.length > 0 ) subcategory.name = req.body.name;
   if(req.body.description && req.body.description.length > 0 )  subcategory.description = req.body.description; 
   if(req.body.imgUrl && req.body.imgUrl.length > 0 ) subcategory.imgUrl = req.body.imgUrl;
-  if(req.body.categoryId)subcategory.categoryId = req.body.categoryId;
-  if(req.body.brandId)subcategory.brandId = req.body.brandId;
+  if(req.body.categoryId)subcategory.categoryId = category.id;
+  subcategory.categoryName=category.name;
+  if(req.body.brandId)subcategory.brandId =brand.id;
+  subcategory.brandName = brand.name;
   subcategory = await subcategory.save();
   return res.status(200).send(subcategory);
 });

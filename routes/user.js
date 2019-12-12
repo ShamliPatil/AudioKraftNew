@@ -80,7 +80,7 @@ router.get('/getAllUsersByDealerId', auth, async (req, res) => {
   }); 
 
   router.get('/getAllUsersForAduioKraft', auth, async (req, res) => {
-    let user =  await User.find().select('firstName lastName email contactNo role enabled');
+    let user =  await User.find().select('firstName lastName email contactNo role userName enabled');
     if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found.' }); //Not Found
     return res.status(200).send(user);
   });

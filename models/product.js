@@ -68,7 +68,7 @@ const productSchema = new mongoose.Schema({
     },
     isCustomizable:{
         type:Boolean,
-        required:true,
+        required:false,
         default:false
     },
     specifications:[{
