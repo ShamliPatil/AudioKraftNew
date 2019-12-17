@@ -53,25 +53,6 @@ productColorCombination = await productColorCombination.save();
         let managestock = ManageStock.delete({_id:managestock._id});
     }
 }
-// let session = null
-// await updateInitalStock(managestock.productColorCombinationId,productColorCombination.initalStock);
-// async function updateInitalStock(id,initalStock) {
-//     const session = await ProductColorCombination.startSession();
-//     session.startTransaction();
-//     try{
-//     const opts = { session };
-//     const A = await ProductColorCombination.findOneAndUpdate({_id:req.body.productColorCombinationId},{$inc:{initalStock:managestock.addStock}},opts);
-//     const B = await ManageStock({_id:_id, addStock:addStock,type:"credit"}).save(opts);
-//     await session.commitTransaction();
-//     session.endSession();
-//     return true;  
-// }catch (error){
-//     await session.abortTransaction();
-//     session.endSession();
-//     throw error;
-// }
-// }
-
 return res.status(200).send({ statusCode : 200,message : 'CompanyModel Successfuly added.', data : managestock  });
 
 });

@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
+// const AutoIncrementFactory = require('mongoose-sequence');
+// const connection = require('../startup/db');
+// const AutoIncrement = AutoIncrementFactory(connection)(mongoose);
 Joi.objectId = require('joi-objectid')(Joi);
-const { userAddressSchema } = require('../models/useraddress');
 const {seatCoverSchema} = require('../models/seatcover');
-const { productSchema } = require('../models/product');
-const{userSchema} = require('../models/user');
 const status = require('../constants/constantsorderstatus');
+
 
 const purchaseOrderSchema = new mongoose.Schema({ 
     deliveryAddress: {
@@ -22,6 +23,7 @@ const purchaseOrderSchema = new mongoose.Schema({
     products:[
         {
             product:{type:mongoose.Schema.Types.ObjectId,required:true,ref:'Product'},
+            orderId:{type:Number,required:true,default:0},
             quantity:{type:Number,required:true},
             majorColor:{type:String,required:true,minlength:2,maxlength:100},
             minorColor:{type:String,required:true,minlength:2,maxlength:100},
@@ -44,7 +46,9 @@ const purchaseOrderSchema = new mongoose.Schema({
         required : false
     }
 },{ timestamps: true });
-
+// purchaseOrderSchema.plugin(AutoIncrement, {
+//     inc_field: 'orderId'
+// });
 const PurchaseOrder = mongoose.model('PurchaseOrder',purchaseOrderSchema);
 
 function validatePurchaseOrder(purchaseOrder){    

@@ -32,7 +32,7 @@ router.post('/', auth, async (req, res) => {
 
     for(var i = 0; i < products.length; i++ ){
         let productObject = {};
-        const product = await Product.findOne({ _id : products[i].productId});
+        let product = await Product.findOne({ _id : products[i].productId});
 
         if(!product)  return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : ' product id ' + products[i].productId + ' is not valid.' }); 
         // check iscustomizable if yes then check category  chekc data 
@@ -41,6 +41,13 @@ router.post('/', auth, async (req, res) => {
         productObject.quantity = products[i].quantity;
         productObject.majorColor = products[i].majorColor;
         productObject.minorColor = products[i].minorColor;
+        if(finalProducts.length == 0){
+          productObject.orderId = products.length+1;
+        }else {
+          productObject.orderId = finalProducts[i-1].orderId +1;
+        }
+       
+      
        
         if(product.isCustomizable){
             // check data for seatcover
@@ -49,6 +56,7 @@ router.post('/', auth, async (req, res) => {
             productObject.data = products[i].data;
         }
         finalProducts.push(productObject);
+
     }
 
     purchaseOrder.products = finalProducts;
