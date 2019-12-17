@@ -51,7 +51,7 @@ router.post('/', auth, async (req, res) => {
        
         if(product.isCustomizable){
             // check data for seatcover
-            const { error } = validateSeatCover(products[i].data); 
+            const  { error } = validateSeatCover(products[i].data); 
             if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });  
             productObject.data = products[i].data;
         }
