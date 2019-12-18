@@ -36,18 +36,18 @@ router.post('/', auth, async (req, res) => {
 
         if(!product)  return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : ' product id ' + products[i].productId + ' is not valid.' }); 
         // check iscustomizable if yes then check category  chekc data 
+        let orderNumber = await PurchaseOrder.find().sort('-orderId').limit(1);
+        if(!orderNumber || orderNumber.length == 0) {
+          purchaseOrder.orderId = 1;
+        }else {
+          purchaseOrder.orderId = orderNumber[0].orderId + 1;
+        }   
         productObject.product = product;
         productObject.status =status.ORDER_STATUS_PENDING;
         productObject.quantity = products[i].quantity;
         productObject.majorColor = products[i].majorColor;
         productObject.minorColor = products[i].minorColor;
-        if(finalProducts.length == 0){
-          productObject.orderId = products.length+1;
-        }else {
-          productObject.orderId = finalProducts[i-1].orderId +1;
-        }
-       
-      
+        productObject.orderId = purchaseOrder.orderId;
        
         if(product.isCustomizable){
             // check data for seatcover
@@ -62,6 +62,8 @@ router.post('/', auth, async (req, res) => {
     purchaseOrder.products = finalProducts;
 
  purchaseOrder = await purchaseOrder.save(); 
+
+
   //product = await Product.findOne({ _id : purchaseOrder.products.productId}).select('quantity');
 // if(!product) return res.status(404).send({ statusCode : 409, error : 'Not Found.' , message : 'Product not found.' });
   //purchaseOrder.products.product.quantity -= purchaseOrder.products[i].quantity;

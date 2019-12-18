@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
 // const AutoIncrementFactory = require('mongoose-sequence');
 // const connection = require('../startup/db');
-// const AutoIncrement = AutoIncrementFactory(connection)(mongoose);
+// const AutoIncrement = AutoIncrementFactory(connection);
 Joi.objectId = require('joi-objectid')(Joi);
 const {seatCoverSchema} = require('../models/seatcover');
 const status = require('../constants/constantsorderstatus');
@@ -19,6 +19,11 @@ const purchaseOrderSchema = new mongoose.Schema({
         ref:'User',
         required :true
      },
+     orderId:{
+         type:Number,
+         required:true,
+         default:0
+        },
     
     products:[
         {
