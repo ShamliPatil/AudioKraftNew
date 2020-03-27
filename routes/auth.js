@@ -45,8 +45,9 @@ router.post('/', async (req, res) => {
    // user.session = token;
   //  user.loginTime = new Date().getTime();
     user = await user.save();
+    let userName = user.firstName + ' ' + user.lastName;
    // const refreshToken = user.generateRefreshToken();
-    return res.status(200).send({statusMessage:"Login Successful" ,"token" : token, "userType" : user.userType,dealerId:user.assignDealer,userId:user.id});
+    return res.status(200).send({statusMessage:"Login Successful" ,"token" : token, "userType" : user.userType,dealerId:user.assignDealer,userId:user.id, name:userName});
 });
 function validate(req){
     const schema = Joi.object().keys({
@@ -58,7 +59,7 @@ function validate(req){
     //return Joi.validate(req, schema);                           
 };
 function generateAuthToken(user){    
-    const token = jwt.sign({_id:user._id,email:user.email, userType : user.userType }, config.get('jwtPrivateKey') + user.password ,{ expiresIn: '90d'},{ algorithm: 'RS256'});
+    const token = jwt.sign({_id:user._id,email:user.email, userType : user.userType}, config.get('jwtPrivateKey') + user.password ,{ expiresIn: '90d'},{ algorithm: 'RS256'});
     return token;
 };
 module.exports = router;
