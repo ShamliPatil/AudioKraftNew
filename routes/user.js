@@ -80,9 +80,18 @@ router.get('/getAllUsersByDealerId', auth, async (req, res) => {
   }); 
 
   router.get('/getAllUsersForAduioKraft', auth, async (req, res) => {
-    let user =  await User.find().select('firstName lastName email contactNo role userName enabled');
+    let user =  await User.find().select('id');
+    var Users = [];
+    if(user.length > 0){
+      for(i=0; i< user.length; i++){
+        particularUser = await User.findOne({ _id : user[i].id}).select('firstName lastName email contactNo role userName enabled isApproved');
+        if(req.user.id !== particularUser.id ){
+          Users.push(particularUser);
+        }
+      }
+    }
     if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found.' }); //Not Found
-    return res.status(200).send(user);
+    return res.status(200).send(Users);
   });
 
   router.get('/getAllUsersForDealer', auth, async (req, res) => {

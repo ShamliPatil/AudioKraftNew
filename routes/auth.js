@@ -34,12 +34,11 @@ router.post('/', async (req, res) => {
    
   
     if(user.enabled == false) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'User Not enabled plaese contact Admin.' });
-    if(user.isApproved == false) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'User Not enabled plaese contact Admin.' });
+    if(user.isApproved == false) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'User Not Approved plaese contact Admin.' });
 
     const validPassword = await bcrypt.compare(req.body.password, user.password);
     if(!validPassword) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'Invalid username or password.' });
 
-    if(user.isApproved == false) return res.status(401).send({ statusCode : 401, error : 'Unauthorized' , message : 'User is is Not Approved.' });
 
     const token = generateAuthToken(user);
    // user.session = token;
@@ -47,7 +46,7 @@ router.post('/', async (req, res) => {
     user = await user.save();
     let userName = user.firstName + ' ' + user.lastName;
    // const refreshToken = user.generateRefreshToken();
-    return res.status(200).send({statusMessage:"Login Successful" ,"token" : token, "userType" : user.userType,dealerId:user.assignDealer,userId:user.id, name:userName});
+    return res.status(200).send({statusCode : 200,message:"Login Successful" ,"token" : token, "userType" : user.userType,dealerId:user.assignDealer,userId:user.id, name:userName});
 });
 function validate(req){
     const schema = Joi.object().keys({

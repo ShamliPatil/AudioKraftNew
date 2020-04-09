@@ -77,7 +77,7 @@ var userSchema = new Schema({
     },
     isApproved:{
         type:Boolean,
-        required:false,
+        required:true,
         default:false
     },
     userType:{
@@ -90,7 +90,7 @@ var userSchema = new Schema({
     },
     enabled:{
         type:Boolean,
-        required:false,
+        required:true,
         default:false
     },
    createdBy : {

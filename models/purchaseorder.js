@@ -1,8 +1,5 @@
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
-// const AutoIncrementFactory = require('mongoose-sequence');
-// const connection = require('../startup/db');
-// const AutoIncrement = AutoIncrementFactory(connection);
 Joi.objectId = require('joi-objectid')(Joi);
 const {seatCoverSchema} = require('../models/seatcover');
 const status = require('../constants/constantsorderstatus');
