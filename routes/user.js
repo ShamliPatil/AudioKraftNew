@@ -67,8 +67,14 @@ router.patch('/enableOrApproveUser', auth, async (req, res) => {
     if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
     let user = await User.findOne({_id:req.body.userId});
     if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found please provide userId.' });
-    user.enabled=req.body.enabled;
-    user.isApproved=req.body.isApproved;
+    if(req.body.enabled !== user.enabled && req.body.enabled !== undefined){
+      user.enabled = req.body.enabled;
+    }
+    if(req.body.isApproved !== user.isApproved && req.body.isApproved !== undefined){
+      user.isApproved = req.body.isApproved;
+    } 
+    // user.enabled=req.body.enabled;
+    // user.isApproved=req.body.isApproved;
     user.updatedBy = req.user.id;
     user = await user.save();
     return res.status(200).send(user);
@@ -95,7 +101,7 @@ router.get('/getAllUsersByDealerId', auth, async (req, res) => {
   });
 
   router.get('/getAllUsersForDealer', auth, async (req, res) => {
-    let user =  await User.find({role:"ROLE_DEALER"}).select('firstName lastName email contactNo isApproved').populate('assignDealer','dealershipName');
+    let user =  await User.find({role:"ROLE_DEALER"}).select('firstName lastName email contactNo isApproved enabled').populate('assignDealer','dealershipName');
     if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found.' }); //Not Found
     return res.status(200).send(user);
   });
