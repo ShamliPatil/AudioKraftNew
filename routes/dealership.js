@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/createDelaer', auth, async (req, res) => {
-  const { error } = validate(req.body) || {}; 
+  const { error } = validate(req.body); 
   if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
  //1) check user exist or not
     let dealer = await Dealership.findOne({ dealershipName : req.body.dealershipName }).select('dealershipName');

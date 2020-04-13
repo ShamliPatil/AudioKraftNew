@@ -60,6 +60,7 @@ function validateDealership(dealership){
        // users:Joi.objectId()
 
     })
+    return { error} = schema.validate(dealership);
 }
     function validateDealershipUpdate(dealership){
         const schema = Joi.object().keys({
