@@ -1,12 +1,12 @@
 const _ = require('lodash');
-const { Dealership , validate ,validateDealershipUpdate,validateDealerEnabled} = require('../models/dealership');
+const { Dealership, validate, validateDealershipUpdate, validateDealerEnabled} = require('../models/dealership');
 const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
 
 router.post('/createDelaer', auth, async (req, res) => {
-    const { error } = validate(req.body); 
-    if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
+  const { error } = validate(req.body) || {}; 
+  if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
  //1) check user exist or not
     let dealer = await Dealership.findOne({ dealershipName : req.body.dealershipName }).select('dealershipName');
     if(dealer) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Dealership already exit.' });

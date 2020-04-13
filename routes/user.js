@@ -31,10 +31,8 @@ router.post('/createUserForDealer', async (req, res) => {
 router.post('/createUserForAudiokraft', async (req, res) => {
     const {error} = validateForAudiokraft(req.body); 
     if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
-   
     // let user = await User.findOne({imei: req.body.imei});
     // if(user) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'IMEI Aleady exist.' });
-    
     user = await User.findOne({email: req.body.email}).select('email');
     if(user) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'Email already exist.' });
     

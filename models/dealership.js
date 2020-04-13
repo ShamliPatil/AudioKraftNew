@@ -11,7 +11,7 @@ var dealershipSchema = new Schema({
     },
     addresses:[{
         type :[mongoose.Schema.Types.ObjectId],
-        required :true,
+        required :false,
         ref:'UserAddress',
         default:[]
     }],
@@ -29,7 +29,7 @@ var dealershipSchema = new Schema({
     },
     city:{
          type:String,
-        required:true,
+        required:false,
         minlength : 2,
         maxlength : 30
     },
@@ -53,9 +53,9 @@ const Dealership = mongoose.model('Dealership',dealershipSchema);
 function validateDealership(dealership){
     const schema = Joi.object().keys({
         dealershipName : Joi.string().min(2).max(100).trim().required(),
-        addresses : Joi.array().required(),
+        addresses : Joi.array(),
         brands : Joi.array().required(),
-        city : Joi.string().min(2).trim().max(30).required(),
+        city : Joi.string().min(2).trim().max(30),
         contactNo:Joi.string().min(10).max(15).required()
        // users:Joi.objectId()
 
