@@ -26,11 +26,11 @@ router.post('/setImageToBrand', auth, async (req, res) => {
     const brandId =req.body.brandId;
     //const imgurl =req.body.imgUrl;
      if(!mongoose.Types.ObjectId.isValid(brandId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid brandId.'}); 
-    let brand = await Brand.findOne({ _id : brandId });
-    if(!brand) return res.status(404).send({ statusCode : 404, error : 'Bad Request' , message : 'Brand not found' });
-    brand = await Brand.findOne({imgUrl:req.body.imgUrl });
+     let brand = await Brand.findOne({imgUrl:req.body.imgUrl });
     if(brand) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'ImageUrl already exit Under this Brand.' });
-  if(brand.imgUrl || brand.imgUrl.length > 0){
+    brand = await Brand.findOne({ _id : brandId });
+    if(!brand) return res.status(404).send({ statusCode : 404, error : 'Bad Request' , message : 'Brand not found' });
+  if(req.body.imgUrl || req.body.imgUrl > 0){
     brand.imgUrl=req.body.imgUrl;
   }else{
     // create new array of string 

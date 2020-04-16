@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema({
     },
     imgUrl : {
             type :[String],
-            required :true
+            required :false
     },
     description : {
         type: String,
@@ -98,7 +98,7 @@ function validateProduct(product){
         subcategoryId : Joi.objectId().required(),
         categoryId : Joi.objectId().required(),
         brandId : Joi.objectId().required(),
-        imgUrl : Joi.array().required(),
+        imgUrl : Joi.array(),
         price : Joi.number().required(),
         dealerPrice : Joi.number().required(),
         quantity :Joi.number().required(),

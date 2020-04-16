@@ -17,7 +17,7 @@ const categorySchema = new mongoose.Schema({
     },
     imgUrl : {
             type :String,
-            required :true
+            required :false
     },
     enabled:{
         type:Boolean,
@@ -38,7 +38,7 @@ const Category = mongoose.model('Category',categorySchema);
 function validateCategory(category){    
     const schema = Joi.object({
         name : Joi.string().min(2).max(100).required(),
-        imgUrl: Joi.string().required(),
+        imgUrl: Joi.string(),
         description : Joi.string().min(2).max(1024)
     })
      return { error} = schema.validate(category);

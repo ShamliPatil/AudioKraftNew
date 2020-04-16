@@ -16,8 +16,8 @@ const brandSchema = new mongoose.Schema({
         maxlength: 30,
     },
     imgUrl : {
-            type :String,
-            required :true
+        type :String,
+        required :false
     },
     categories:[{
         type:[mongoose.Schema.Types.ObjectId],
