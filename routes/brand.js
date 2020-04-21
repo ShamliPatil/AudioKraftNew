@@ -18,7 +18,7 @@ router.post('/', auth, async (req, res) => {
     brand = new Brand(_.pick(req.body, [ 'name', 'imgUrl','categories']));
     brand.createdBy = req.user._id;
     brand = await brand.save();
-    return res.status(200).send({ statusCode : 200,message : 'Brand Successfuly added.' });
+    return res.status(200).send({ statusCode : 200,message : 'Brand Successfuly added.',brandId:brand.id });
 });
 router.post('/setImageToBrand', auth, async (req, res) => {
     const { error } = validateBrandimgUrl(req.body); 
@@ -46,6 +46,13 @@ router.get('/getAllBrands', auth, async (req, res) => {
   return res.status(200).send(brand);
 
 });
+
+router.get('/getBrandBrandId', auth, async (req, res) => {
+  let brand = await Brand.findOne({_id:req.query.brandId}).populate('categories','name');
+  if(!brand) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Brand not found.' });
+  return res.status(200).send(brand);
+});
+
 router.patch('/updateBrandById', auth, async (req, res) => {
     const { error } = validateBrandUpadte(req.body); 
     if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });

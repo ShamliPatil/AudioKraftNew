@@ -11,7 +11,7 @@ router.post('/', auth, async (req, res) => {
     if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
   //2) Check this category is exist under brand.
     let category = await Category.findOne({name : req.body.name }).select('name');
-    if(category) return res.status(409).send({ statusCode : 409, error : 'Conflict' , message : 'category already exits in this brand.'});
+    if(category) return res.status(400).send({  statusCode : 400, error : 'Bad Request', message : 'category already exits in this brand.'});
 
     category = new Category(_.pick(req.body, [ 'name', 'imgUrl', 'description']));
     category.createdBy = req.user._id;
@@ -50,6 +50,13 @@ router.get('/getAllCategories', auth, async (req, res) => {
   return res.status(200).send(category);
 
 });
+
+router.get('/getCategoryByCategoryId', auth, async (req, res) => {
+  let category = await Category.findOne({_id:req.query.categoryId});
+  if(!category) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Category not found.' });
+  return res.status(200).send(category);
+});
+
 router.patch('/updateCategoryById', auth, async (req, res) => {
     const { error } = validateCategoryUpdate(req.body); 
     if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });

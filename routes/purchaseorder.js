@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const mongoose = require('mongoose');
 const { Product } = require('../models/product');
 const {UserAddress} = require('../models/useraddress');
 const {  PurchaseOrder, validate,validatePurchaseOrderforUpdateStatus} = require('../models/purchaseorder');
@@ -43,7 +44,7 @@ router.post('/', auth, async (req, res) => {
           purchaseOrder.orderId = orderNumber[0].orderId + 1;
         }   
         productObject.product = product;
-        productObject.status =status.ORDER_STATUS_PENDING;
+        //productObject.status =status.ORDER_STATUS_PENDING;
         productObject.quantity = products[i].quantity;
         productObject.majorColor = products[i].majorColor;
         productObject.minorColor = products[i].minorColor;
@@ -60,6 +61,7 @@ router.post('/', auth, async (req, res) => {
     }
 
     purchaseOrder.products = finalProducts;
+    purchaseOrder.status = status.ORDER_STATUS_PENDING;
 
  purchaseOrder = await purchaseOrder.save(); 
 
@@ -83,19 +85,32 @@ router.get('/getPurchaseOrderByUserId', auth, async (req, res) => {
   if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found.' }); //Not Found
   return res.status(200).send(purchaseOrder);
 });
+
+router.get('/getAllPurchaseOrder', auth, async (req, res) => {
+  let purchaseOrder =  await PurchaseOrder.find({}).select(['_id','status','orderId']).populate('userId');
+  //let category = await Category.find().select(['_id','name','imgUrl']).sort('name');
+  if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found.' }); //Not Found
+  return res.status(200).send(purchaseOrder);
+
+});
+
 router.patch('/updatePurchaseOrderById', auth, async (req, res) => {
   const { error } = validatePurchaseOrderforUpdateStatus(req.body); 
   if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
-  let purchaseOrder = await PurchaseOrder.findOne({'products._id':req.body.statusId});
+  let purchaseOrder = await PurchaseOrder.findOne({ _id : req.body.purchaseOrderId});
   if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found please provide purchaseOrderId.' });
-  if(purchaseOrder.products.length > 0){
-    for(var i = 0; i < purchaseOrder.products.length; i++){
-      if(req.body.status && req.body.status.length > 0 ) purchaseOrder.products[i].status = req.body.status;
-      purchaseOrder.products[i].date = purchaseOrder.updatedAt;
-  }
+  if(req.body.status && req.body.status.length > 0 ) purchaseOrder.status = req.body.status;
   purchaseOrder.updatedBy = req.user._id;
   purchaseOrder = await purchaseOrder.save();
   return res.status(200).send(purchaseOrder);
-}
+});
+
+router.delete('/deletePurchaseorderByPurchaseOrderId', auth, async (req, res) => {
+  purchaseOrderId = req.query.purchaseOrderId;
+  if(!mongoose.Types.ObjectId.isValid(purchaseOrderId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid PurchaseOrderId.'});
+  let purchaseOrder =  await PurchaseOrder.findByIdAndDelete({ _id :purchaseOrderId });
+  if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Brand not found.' }); //Not Found
+  return res.status(200).send({statusCode : 200,message : 'Order Successfuly delete.' });
+
 });
 module.exports = router;

@@ -1,21 +1,22 @@
 const _ = require('lodash');
+const mongoose = require('mongoose');
 const { Dealership, validate, validateDealershipUpdate, validateDealerEnabled} = require('../models/dealership');
 const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
 
-router.post('/createDelaer', auth, async (req, res) => {
+router.post('/createDelaer',async (req, res) => {
   const { error } = validate(req.body); 
   if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
  //1) check user exist or not
     let dealer = await Dealership.findOne({ dealershipName : req.body.dealershipName }).select('dealershipName');
-    if(dealer) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Dealership already exit.' });
+    if(dealer) return res.status(400).send({ statusCode : 400,error : 'Bad Request' , message : 'Dealership already exit.' });
     dealer = new Dealership(_.pick(req.body, [ 'dealershipName', 'addresses', 'brands','contactNo','city']));
     dealer.createdBy = req.user._id;
     dealer = await dealer.save();
     return res.status(200).send({ statusCode : 200,message : 'DealerShip Successfuly added.', data : dealer });
 });
-router.get('/getAllDealers', auth, async (req, res) => {
+router.get('/getAllDealers',async (req, res) => {
     let dealer = await Dealership.find().populate('brands addresses').sort('name');
     if(!dealer) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Dealers not found.' }); //Not Found
     return res.status(200).send(dealer);
@@ -42,6 +43,21 @@ router.patch('/enabledDealerById', auth, async (req, res) => {
   dealer.updatedBy = req.user._id;
   dealer = await dealer.save();
   return res.status(200).send(dealer);
+});
+
+router.get('/getDealerByDealerId', auth, async (req, res) => {
+  let dealer = await Dealership.findOne({_id:req.query.dealerId});
+  if(!dealer) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Dealer not found.' });
+  return res.status(200).send(dealer);
+});
+
+router.delete('/deleteDealerByDealerId', auth, async (req, res) => {
+  dealerId = req.query.dealerId;
+  if(!mongoose.Types.ObjectId.isValid(dealerId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid DealerId.'});
+  let dealer =  await Dealership.findByIdAndDelete({ _id :dealerId });
+  if(!dealer) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Dealer not found.' }); //Not Found
+  return res.status(200).send({statusCode : 200,message : 'Dealer Successfuly delete.' });
+
 });
 
 module.exports = router;

@@ -21,6 +21,11 @@ const purchaseOrderSchema = new mongoose.Schema({
          required:true,
          default:0
         },
+        status:{
+            type:String,
+            required:false,
+            enum:[status.ORDER_STATUS_PENDING,status.ORDER_STATUS_CONFIRMED,status.ORDER_STATUS_REJECTED,status.ORDER_STATUS_DISPATCHED,status.ORDER_STATUS_DELIVERED]
+        },
     
     products:[
         {
@@ -30,7 +35,7 @@ const purchaseOrderSchema = new mongoose.Schema({
             majorColor:{type:String,required:true,minlength:2,maxlength:100},
             minorColor:{type:String,required:true,minlength:2,maxlength:100},
             date:{type:String,required:false,default:0},
-            status:{type:String,required:false,enum:[status.ORDER_STATUS_PENDING,status.ORDER_STATUS_CONFIRMED,status.ORDER_STATUS_REJECTED,status.ORDER_STATUS_DISPATCHED,status.ORDER_STATUS_DELIVERED]},
+            //status:{type:String,required:false,enum:[status.ORDER_STATUS_PENDING,status.ORDER_STATUS_CONFIRMED,status.ORDER_STATUS_REJECTED,status.ORDER_STATUS_DISPATCHED,status.ORDER_STATUS_DELIVERED]},
             data:{type:seatCoverSchema,required:false}
         }
     ],
@@ -64,7 +69,7 @@ function validatePurchaseOrder(purchaseOrder){
 }
 function validatePurchaseOrderforUpdateStatus(purchaseOrder){    
     const schema = Joi.object().keys({
-        statusId : Joi.objectId().required(), 
+        purchaseOrderId : Joi.objectId().required(), 
         status : Joi.string().valid(status.ORDER_STATUS_PENDING,status.ORDER_STATUS_CONFIRMED,status.ORDER_STATUS_REJECTED,status.ORDER_STATUS_DISPATCHED,status.ORDER_STATUS_DELIVERED)
 
     })

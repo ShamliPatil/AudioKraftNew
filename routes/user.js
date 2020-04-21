@@ -104,6 +104,12 @@ router.get('/getAllUsersByDealerId', auth, async (req, res) => {
     return res.status(200).send(user);
   });
 
+  router.get('/getUserByUserId', auth, async (req, res) => {
+    let user = await User.findOne({_id:req.query.userId}).populate('categories','name');
+    if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found.' });
+    return res.status(200).send(user);
+  });
+
   router.delete('/deleteUserByUserId', auth, async (req, res) => {
     userId = req.query.userId;
     if(!mongoose.Types.ObjectId.isValid(userId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid UserId.'});

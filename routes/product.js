@@ -23,7 +23,7 @@ router.post('/', auth, async (req, res) => {
     if(!subcategory) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'subcategoryId is not valid.' });
   //2) Check this category is exist under brand.
      let product = await Product.findOne({ subcategoryId : subcategory.id, name : req.body.name }).select('name');
-     if(product) return res.status(409).send({ statusCode : 409, error : 'Conflict' , message : 'product already exits in this Category.'});
+     if(product) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'product already exits in this Category.'});
 
     product = new Product(_.pick(req.body, [ 'name', 'imgUrl', 'description','colors','price','specifications','dealerPrice','quantity']));
     //product.specifications = req.body.specifications;

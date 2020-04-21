@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const mongoose = require('mongoose');
+var ObjectId = mongoose.Types.ObjectId;
 const { SubCategory , validate,validateSubCategoryEnabled,validateSubCategoryUpdate } =  require('../models/subcategory');
 const { Category} =  require('../models/category');
 const { Brand} =  require('../models/brand');
@@ -38,11 +39,18 @@ router.post('/', auth, async (req, res) => {
 });
 
 router.get('/getAllSubCategories', auth, async (req, res) => {
-  let subcategory = await SubCategory.find().select(['_id','name','imgUrl','categoryName','categoryId','brandName','brandId']).sort('name');
+  let subcategory = await SubCategory.find().select(['_id','name','imgUrl','categoryName','categoryId','brandName','brandId','enabled']).sort('name');
   if(!subcategory) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Categories not found.' }); //Not Found
   return res.status(200).send(subcategory);
 
 });
+
+router.get('/getSubCategoryBySubCategoryId', auth, async (req, res) => {
+    let subcategory = await SubCategory.findOne({ _id:req.query.subCategoryId});
+    if(!subcategory) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'SubCategory not found.' });
+    return res.status(200).send(subcategory);
+  });
+
 router.patch('/updateSubCategoryById', auth, async (req, res) => {
   const { error } = validateSubCategoryUpdate(req.body); 
   if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
