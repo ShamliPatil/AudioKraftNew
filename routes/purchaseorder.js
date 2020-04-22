@@ -113,4 +113,22 @@ router.delete('/deletePurchaseorderByPurchaseOrderId', auth, async (req, res) =>
   return res.status(200).send({statusCode : 200,message : 'Order Successfuly delete.' });
 
 });
+
+// router.get('/searchOrderBySearchText',  async (req, res) => {
+//   let purchaseOrder;
+//   const type = req.query.type;
+//   let searchText=req.query.name;
+//   let user = await User.findOne({$or:[{ 'firstName' : { '$regex' : searchText, '$options' : 'i' }},{ 'lastName' : { '$regex' : searchText, '$options' : 'i' }},{ 'contactNo' :  searchText }]});
+//   if(!searchText || searchText.length == 0)return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'Please provide SearchText.' });
+//   if(type == "number"){
+//     searchText = parseInt(searchText,10);
+//     purchaseOrder = await PurchaseOrder.find({$or:[{ 'orderId' : searchText }]}).sort({name : 1});
+//   } if(type == "string"){
+//     searchText = searchText;
+//     purchaseOrder = await PurchaseOrder.find({$or:[{ 'userId' : user.id}]});
+//   }
+//   if(!purchaseOrder || purchaseOrder.length ==0 ) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Product not found.' }); //Not Found
+//   return res.status(200).send(purchaseOrder);
+// });
+
 module.exports = router;

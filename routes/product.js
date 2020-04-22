@@ -177,5 +177,22 @@ router.delete('/deleteProductByProductId', auth, async (req, res) => {
 
 });
 
+// router.get('/searchProductBySearchText',auth ,async (req, res) => {
+//   let product;
+//   const type = req.query.type;
+//   let searchText=req.query.name;
+//   if(!searchText || searchText.length == 0)return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'Please provide SearchText.' });
+//   if(type == "number"){
+//     searchText = parseInt(searchText,10);
+//      product = await Product.find({$or:[{ 'dealerPrice' : searchText },{ 'price' : searchText }]}).sort({name : 1});
+     
+//   } if(type == "string"){
+//     searchText = searchText;
+//     product = await Product.find({$or:[{ 'name' : { '$regex' : searchText, '$options' : 'i' }},{ 'brandName' : { '$regex' : searchText, '$options' : 'i' }},{ 'categoryName' : { '$regex' : searchText, '$options' : 'i' }},{ 'subcategoryName' : { '$regex' : searchText, '$options' : 'i' }}]}).sort({name : 1});
+//   }
+//   if(!product ||product.length ==0 ) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Product not found.' }); //Not Found
+//   return res.status(200).send(product);
+
+// });
 
 module.exports = router;

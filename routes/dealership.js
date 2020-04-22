@@ -5,14 +5,14 @@ const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
 
-router.post('/createDelaer',async (req, res) => {
+router.post('/createDelaer',auth,async (req, res) => {
   const { error } = validate(req.body); 
   if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
  //1) check user exist or not
     let dealer = await Dealership.findOne({ dealershipName : req.body.dealershipName }).select('dealershipName');
     if(dealer) return res.status(400).send({ statusCode : 400,error : 'Bad Request' , message : 'Dealership already exit.' });
     dealer = new Dealership(_.pick(req.body, [ 'dealershipName', 'addresses', 'brands','contactNo','city']));
-    dealer.createdBy = req.user._id;
+    dealer.createdBy = req.user.id;
     dealer = await dealer.save();
     return res.status(200).send({ statusCode : 200,message : 'DealerShip Successfuly added.', data : dealer });
 });

@@ -65,7 +65,7 @@ var userSchema = new Schema({
         maxlength : 100
     },
     contactNo:{
-        type:Number,
+        type:String,
         required:false,
         minlength : 10,
         maxlength : 15
