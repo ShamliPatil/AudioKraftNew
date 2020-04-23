@@ -27,7 +27,7 @@ router.post('/setImageToCategory', auth, async (req, res) => {
    if(!mongoose.Types.ObjectId.isValid(categoryId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid categoryId.'}); 
   let category = await Category.findOne({ _id : categoryId });
   if(!category) return res.status(404).send({ statusCode : 404, error : 'Bad Request' , message : 'Category not found' });
- if(category.imgUrl || category.imgUrl.length > 0){
+  if(category.imgUrl || category.imgUrl == undefined){
     category.imgUrl=req.body.imgUrl;
   }else{
     // create new array of string 
