@@ -41,7 +41,7 @@ router.post('/setImageToBrand', auth, async (req, res) => {
     return res.status(200).send({ statusCode : 200,message : 'ImageUrl Successfuly added.' });
 });
 router.get('/getAllBrands', auth, async (req, res) => {
-  let brand = await Brand.find().sort('name').populate('categories','name');
+  let brand = await Brand.find().sort({createdAt :-1}).populate('categories','name');
   if(!brand) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Brands not found.' }); //Not Found
   return res.status(200).send(brand);
 

@@ -45,7 +45,7 @@ router.get('/getCategoriesByBrandId', auth, async (req, res) => {
 
 });
 router.get('/getAllCategories', auth, async (req, res) => {
-  let category = await Category.find().sort('name');
+  let category = await Category.find().sort({createdAt :-1});;
   if(!category) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Category not found.' }); //Not Found
   return res.status(200).send(category);
 

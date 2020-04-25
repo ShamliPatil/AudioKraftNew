@@ -58,7 +58,7 @@ router.post('/setImageProduct', auth, async (req, res) => {
 
 
 router.get('/getAllProducts', auth, async (req, res) => {
-  let product = await Product.find().sort('name');
+  let product = await Product.find().sort({createdAt :-1});
   if(!product) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Products not found.' }); //Not Found
   return res.status(200).send(product);
 

@@ -54,7 +54,7 @@ router.patch('/submitUserAddress', auth, async (req, res) => {
     if(req.body.state && req.body.state.length > 0 )  address.state = req.body.state;
     if(req.body.landmark && req.body.landmark.length > 0 ) address.landmark = req.body.landmark;
     if(req.body.addressTitle && req.body.addressTitle.length > 0 )  address.addressTitle = req.body.addressTitle;
-    if(req.body.contactNo && req.body.landmark.contactNo > 0 ) address.contactNo = req.body.contactNo;
+    if(req.body.contactNo && req.body.contactNo > 0 ) address.contactNo = req.body.contactNo;
     address.updatedBy = req.user.id;
     address = await address.save();
     return res.status(200).send({statusCode : 200,message : 'Address Successfuly updated.' });

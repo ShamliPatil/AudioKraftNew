@@ -17,7 +17,7 @@ router.post('/createDelaer',auth,async (req, res) => {
     return res.status(200).send({ statusCode : 200,message : 'DealerShip Successfuly added.', data : dealer });
 });
 router.get('/getAllDealers',async (req, res) => {
-    let dealer = await Dealership.find().populate('brands addresses').sort('name');
+    let dealer = await Dealership.find().populate('brands addresses').sort({createdAt :-1});;
     if(!dealer) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Dealers not found.' }); //Not Found
     return res.status(200).send(dealer);
   

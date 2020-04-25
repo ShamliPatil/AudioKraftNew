@@ -26,7 +26,7 @@ router.post('/createUserForDealer', async (req, res) => {
     user.role = roleArray;     
     user.userType = usertypes.USER_TYPE_DEALER;
     user = await user.save();    
-    return res.status(201).send({statusCode : 201, message : 'Successfully Registered.'});
+    return res.status(200).send({statusCode : 200, message : 'Successfully Registered.'});
 });
 router.post('/createUserForAudiokraft', async (req, res) => {
     const {error} = validateForAudiokraft(req.body); 
@@ -44,7 +44,7 @@ router.post('/createUserForAudiokraft', async (req, res) => {
     user.password = await bcrypt.hash(user.password, salt);
     user.userType = role.userType;
     user = await user.save();    
-    return res.status(201).send({statusCode : 201, message : 'Successfully Registered.'});
+    return res.status(200).send({statusCode : 200, message : 'Successfully Registered.'});
 });
 router.post('/setDefaultAddresstoUser', auth,async (req, res) => {
     const {error} = validateforDefaultAddress(req.body); 
@@ -84,7 +84,7 @@ router.get('/getAllUsersByDealerId', auth, async (req, res) => {
   }); 
 
   router.get('/getAllUsersForAduioKraft', auth, async (req, res) => {
-    let user =  await User.find().select('id');
+    let user =  await User.find().select('id').sort({createdAt :-1});;
     var Users = [];
     if(user.length > 0){
       for(i=0; i< user.length; i++){
@@ -99,7 +99,7 @@ router.get('/getAllUsersByDealerId', auth, async (req, res) => {
   });
 
   router.get('/getAllUsersForDealer', auth, async (req, res) => {
-    let user =  await User.find({role:"ROLE_DEALER"}).select('firstName lastName email contactNo isApproved enabled').populate('assignDealer','dealershipName');
+    let user =  await User.find({role:"ROLE_DEALER"}).sort({createdAt :-1}).select('firstName lastName email contactNo isApproved enabled').populate('assignDealer','dealershipName');
     if(!user) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'User not found.' }); //Not Found
     return res.status(200).send(user);
   });
