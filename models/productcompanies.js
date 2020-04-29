@@ -6,11 +6,11 @@ const productCompaniesInnerSchema = new mongoose.Schema({
     companyId:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'company',
-        required : true
+        required : false
     },
     companyName:{
         type:String,
-        required:true,
+        required:false,
          minlength: 2,
          maxlength: 50
     },
@@ -18,11 +18,11 @@ const productCompaniesInnerSchema = new mongoose.Schema({
         companyModelId:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'CompanyModel',
-        required : true
+        required : false
     },
     companyModelName:{
         type:String,
-        required:true,
+        required:false,
          minlength: 2,
          maxlength: 50
     }
@@ -34,23 +34,23 @@ const productcompaniesSchema = new mongoose.Schema({
     productId : {
         type: mongoose.Schema.Types.ObjectId,
         ref:'Product',
-        required : true,
+        required : false,
     },
     productName : {
         type: String,
-        required : true,
+        required : false,
         minlength: 1,
         maxlength: 50,
     },
    companies:[{
        type: productCompaniesInnerSchema,
-       required:true
+       required:false
    }],
    
     enabled:{
         type:Boolean,
-        required:true,
-        default:true
+        required:false,
+        default:false
     },
     createdBy : {
         type : mongoose.Schema.Types.ObjectId,
@@ -71,7 +71,17 @@ function validateproductCompanies(productcompanies){
     })
    return { error} = schema.validate(productcompanies);
 }
-
+function validateProductCompany(productcompanies){
+    const schema = Joi.object().keys({
+        productCompanyId : Joi.objectId().required(),
+        companies : Joi.array(),
+        enabled:Joi.boolean(),
+        productId:Joi.objectId()
+       
+    })
+   return { error} = schema.validate(productcompanies);
+}
 
 module.exports.ProductCompanies = ProductCompanies;
 module.exports.validate = validateproductCompanies;
+module.exports.validateProductCompany = validateProductCompany;

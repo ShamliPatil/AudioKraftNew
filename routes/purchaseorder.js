@@ -73,7 +73,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 router.get('/getPurchaseOrderById', auth, async (req, res) => {
-  let purchaseOrder =  await PurchaseOrder.findOne({ purchaseOrderId : req.query.id }).populate('products.product');
+  let purchaseOrder =  await PurchaseOrder.findOne({ purchaseOrderId : req.query.id }).populate('products.product').populate('userId','dealership');
   //let category = await Category.find().select(['_id','name','imgUrl']).sort('name');
   if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found.' }); //Not Found
   return res.status(200).send(purchaseOrder);

@@ -48,14 +48,12 @@ const productColorCombinationSchema = new mongoose.Schema({
     },
     imgUrl:{
         type:String,
-        required:false,
-        minlegth:2,
-        maxlength:300
+        required:false
     },
     enabled:{
         type:Boolean,
         required:true,
-        default:true
+        default:false
     },
     createdBy : {
         type : mongoose.Schema.Types.ObjectId,
@@ -77,11 +75,34 @@ function validateproductColorCombination(productColorCombination){
         colorMajor : Joi.string().min(2).max(30).required(),
         colorMinor : Joi.string().min(2).max(30).required(),
         initalStock : Joi.number().required(),
-        imgUrl:Joi.string().min(2).max(300).required()
+        imgUrl:Joi.string()
     })
      return { error} = schema.validate(productColorCombination);
     //return Joi.validate(productColorCombination, schema);
 }
-
+function validateProductColorCombinationUpdate(productColorCombination){    
+    const schema = Joi.object({
+        productColorCombinationId:Joi.string().required(),
+        productId : Joi.string(),
+        companyId : Joi.string(),
+        companyModelId : Joi.string(),
+        colorMajor : Joi.string().min(2).max(30),
+        colorMinor : Joi.string().min(2).max(30),
+        initalStock : Joi.number(),
+        enabled:Joi.boolean()
+    })
+     return {error} = schema.validate(productColorCombination);
+    //return Joi.validate(company, schema);
+}
+function validateProductColorimgUrl(product){    
+    const schema =Joi.object().keys({
+    imgUrl: Joi.string().required(), 
+    productColorCombinationId:Joi.string().required()
+    })
+    return { error} = schema.validate(product);
+    //return Joi.validate(brand, schema);
+};
 module.exports.ProductColorCombination = ProductColorCombination;
 module.exports.validate = validateproductColorCombination;
+module.exports.validateProductColorCombinationUpdate=validateProductColorCombinationUpdate;
+module.exports.validateProductColorimgUrl =validateProductColorimgUrl;

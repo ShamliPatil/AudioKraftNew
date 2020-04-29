@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const { CompanyModel } = require('../models/companymodel');
-const { ProductColorCombination ,validate } = require('../models/productcolorcombination');
+const { ProductColorCombination ,validate ,validateProductColorCombinationUpdate, validateProductColorimgUrl} = require('../models/productcolorcombination');
 const { Company } =  require('../models/company');
 const { Product } = require('../models/product');
 const auth = require('../middleware/auth');
@@ -43,6 +43,25 @@ router.post('/', auth, async (req, res) => {
     return res.status(200).send({ statusCode : 200,message : 'CompanyModel Successfuly added.', data : productColorCombination  });
 });
 
+router.post('/setImageProductColorCombination', auth,async (req, res) => {
+  const { error } = validateProductColorimgUrl(req.body); 
+  if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
+  const productColorCombinationId =req.body.productColorCombinationId;
+  //const imgurl =req.body.imgUrl;
+   if(!mongoose.Types.ObjectId.isValid(productColorCombinationId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid productColorCombinationId.'}); 
+  let productColorCombination = await ProductColorCombination.findOne({ _id : productColorCombinationId });
+  if(!productColorCombination) return res.status(404).send({ statusCode : 404, error : 'Bad Request' , message : 'ProductColorCombination not found' });;
+  if(productColorCombination.imgUrl || productColorCombination.imgUrl== undefined){
+    productColorCombination.imgUrl=req.body.imgUrl;
+  }else{
+    // create new array of string 
+    var imgurl = String;
+    productColorCombination.imgUrl = imgUrl;
+  }
+  productColorCombination = await productColorCombination.save();
+  return res.status(200).send({ statusCode : 200,message : 'ImageUrl Successfuly added.' });
+});
+
 router.get('/getProductColorCombination', auth, async (req, res) => {
   const pageNo= parseInt(req.query.pageNo);
   const size = parseInt(req.query.size);
@@ -59,6 +78,52 @@ router.get('/getProductColorCombination', auth, async (req, res) => {
     const productColorCombination = await ProductColorCombination.find({productId : productId, companyId : companyModel.companyId, companyModelId : companyModel.id }).skip(size*(pageNo - 1)).limit(size);;
     if(!productColorCombination || productColorCombination.length == 0)return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Products color combination not found.' });
     return res.status(200).send({ statusCode : 200, data : productColorCombination  });
+});
+
+router.get('/getAllProductColorCombination',auth,async (req, res) => {
+  let productColorCombination = await ProductColorCombination.find().sort({'createdAt':-1});
+  if(!productColorCombination) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'ProductColorCombination not found.' }); //Not Found
+  return res.status(200).send(productColorCombination);
+
+});
+router.patch('/updateProductColorCombinationOrEnabledStatusById',auth, async (req, res) => {
+  const { error } = validateProductColorCombinationUpdate(req.body); 
+  if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
+  let productColorCombination = await ProductColorCombination.findOne({_id:req.body.productColorCombinationId});
+  if(!productColorCombination) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'ProductColorCombination not found please provide.' });
+
+  if(req.body.productId && req.body.productId.length > 0 ){
+    productColorCombination.productId = req.body.productId;
+    const product = await Product.findOne({ _id : req.body.productId }).select('id name');
+    productColorCombination.productName = product.name;
+  } 
+  if(req.body.companyId && req.body.companyId.length > 0 ){
+    productColorCombination.companyId = req.body.companyId;
+    const company = await Company.findOne({ _id : req.body.companyId }).select('id name');
+    productColorCombination.companyName = company.name;
+
+  } 
+  if(req.body.companyModelId && req.body.companyModelId.length > 0 ){
+    productColorCombination.companyModelId = req.body.companyModelId;
+    const companyModel = await CompanyModel.findOne({ _id : req.body.companyModelId });
+    productColorCombination.companyModelName =companyModel.name;
+
+  } 
+  if(req.body.colorMajor && req.body.colorMajor.length > 0 ) productColorCombination.colorMajor = req.body.colorMajor;
+  if(req.body.colorMinor && req.body.colorMinor.length > 0 ) productColorCombination.colorMinor = req.body.colorMinor;
+  productColorCombination.initalStock = req.body.initalStock;
+  productColorCombination.enabled = req.body.enabled;
+  productColorCombination = await productColorCombination.save();
+  return res.status(200).send(productColorCombination);
+});
+
+router.delete('/deleteProductColorCombinationById',auth,async (req, res) => {
+productColorCombinationId = req.query.productColorCombinationId;
+if(!mongoose.Types.ObjectId.isValid(productColorCombinationId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid companyId.'});
+let productColorCombination =  await ProductColorCombination.findByIdAndDelete({ _id :productColorCombinationId });
+if(!productColorCombination) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'ProductColorCombination not found.' }); //Not Found
+return res.status(200).send({statusCode : 200,message : 'ProductColorCombination Successfuly delete.' });
+
 });
 
 

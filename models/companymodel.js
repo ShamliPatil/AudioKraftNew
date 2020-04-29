@@ -31,6 +31,11 @@ const companymodelSchema = new mongoose.Schema({
         type:Number,
         required:false,
     },
+    enabled:{
+        type:Boolean,
+        required:false,
+        default:false
+    },
     createdBy : {
         type : mongoose.Schema.Types.ObjectId,
         required : false
@@ -57,6 +62,17 @@ function validateCompanymodel(companymodel){
     //return Joi.validate(companymodel, schema);
 }
 
+function validateCompanyModelUpdate(company){    
+    const schema = Joi.object({
+        companymodelId: Joi.string().required(),
+        name : Joi.string().min(2).max(50),
+        companyId:Joi.string(),
+        enabled:Joi.boolean()
+    })
+     return {error} = schema.validate(company);
+    //return Joi.validate(company, schema);
+}
 
 module.exports.CompanyModel = CompanyModel;
 module.exports.validate = validateCompanymodel;
+module.exports.validateCompanyModelUpdate = validateCompanyModelUpdate;

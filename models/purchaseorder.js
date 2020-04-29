@@ -34,7 +34,7 @@ const purchaseOrderSchema = new mongoose.Schema({
             quantity:{type:Number,required:true},
             majorColor:{type:String,required:true,minlength:2,maxlength:100},
             minorColor:{type:String,required:true,minlength:2,maxlength:100},
-            date:{type:String,required:false,default:0},
+            date:{type:String,required:false},
             //status:{type:String,required:false,enum:[status.ORDER_STATUS_PENDING,status.ORDER_STATUS_CONFIRMED,status.ORDER_STATUS_REJECTED,status.ORDER_STATUS_DISPATCHED,status.ORDER_STATUS_DELIVERED]},
             data:{type:seatCoverSchema,required:false}
         }
