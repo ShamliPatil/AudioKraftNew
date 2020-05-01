@@ -41,7 +41,7 @@ router.get('/getCompanyModels', auth, async (req, res) => {
 });
 
 router.get('/getAllCompanieModels',auth, async (req, res) => {
-  let companymodel = await CompanyModel.find().sort({'createdAt':-1});
+  let companymodel = await CompanyModel.find().sort({'createdAt':-1}).populate('companyId','name');
   if(!companymodel) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'CompanyModel not found.' }); //Not Found
   return res.status(200).send(companymodel);
 

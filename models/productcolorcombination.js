@@ -52,7 +52,7 @@ const productColorCombinationSchema = new mongoose.Schema({
     },
     enabled:{
         type:Boolean,
-        required:true,
+        required:false,
         default:false
     },
     createdBy : {

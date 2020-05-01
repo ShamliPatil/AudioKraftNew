@@ -5,7 +5,8 @@ Joi.objectId = require('joi-objectid')(Joi);
 const companymodelSchema = new mongoose.Schema({ 
     companyId:{
         type:mongoose.Schema.Types.ObjectId,
-        required:true
+        required:true,
+        ref:'Company'
     },
     name:{
         type:String,
