@@ -39,6 +39,7 @@ router.post('/setImageToCategory', auth, async (req, res) => {
 });
 
 router.get('/getCategoriesByBrandId', auth, async (req, res) => {
+  if(!mongoose.Types.ObjectId.isValid(req.query.brandId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid brandId.'}); 
   let brand =  await Brand.findOne({ _id : req.query.brandId }).populate('categories');
   if(!brand) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Brands not found.' }); //Not Found
   return res.status(200).send(brand);
@@ -52,6 +53,7 @@ router.get('/getAllCategories', auth, async (req, res) => {
 });
 
 router.get('/getCategoryByCategoryId', auth, async (req, res) => {
+  if(!mongoose.Types.ObjectId.isValid(req.query.categoryId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid categoryId.'}); 
   let category = await Category.findOne({_id:req.query.categoryId});
   if(!category) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Category not found.' });
   return res.status(200).send(category);

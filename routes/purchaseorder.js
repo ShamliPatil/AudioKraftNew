@@ -48,6 +48,7 @@ router.post('/', auth, async (req, res) => {
         productObject.quantity = products[i].quantity;
         productObject.majorColor = products[i].majorColor;
         productObject.minorColor = products[i].minorColor;
+        productObject.date = products[i].date;
         productObject.orderId = purchaseOrder.orderId;
        
         if(product.isCustomizable){
@@ -73,13 +74,15 @@ router.post('/', auth, async (req, res) => {
 });
 
 router.get('/getPurchaseOrderById', auth, async (req, res) => {
-  let purchaseOrder =  await PurchaseOrder.findOne({ purchaseOrderId : req.query.id }).populate('products.product').populate('userId','dealership');
+  if(!mongoose.Types.ObjectId.isValid( req.query.purchaseOrderId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid id.'}); 
+  let purchaseOrder =  await PurchaseOrder.findOne({ _id : req.query.purchaseOrderId }).populate('products.product').populate('userId','dealership');
   //let category = await Category.find().select(['_id','name','imgUrl']).sort('name');
   if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found.' }); //Not Found
   return res.status(200).send(purchaseOrder);
 
 });
 router.get('/getPurchaseOrderByUserId', auth, async (req, res) => {
+  if(!mongoose.Types.ObjectId.isValid(req.query.userId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid userId.'}); 
   let purchaseOrder =  await PurchaseOrder.find({ userId : req.query.userId }).populate('products.product')
   //let category = await Category.find().select(['_id','name','imgUrl']).sort('name');
   if(!purchaseOrder) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'PurchaseOrder not found.' }); //Not Found

@@ -32,6 +32,8 @@ router.post('/', auth, async (req, res) => {
 });
 //get subcategory by category
  router.get('/getSubCategoriesByCategoryIdAndBrandId', auth, async (req, res) => {
+  if(!mongoose.Types.ObjectId.isValid(req.query.categoryId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid categoryId.'}); 
+  if(!mongoose.Types.ObjectId.isValid(req.query.brandId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid brandId.'}); 
   let subcategory =  await SubCategory.find({$and:[{ categoryId : req.query.categoryId },{ brandId : req.query.brandId }]}).select(['_id','name','imgUrl','categoryName','brandName']).sort('name');
   if(!subcategory) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'subcategory not found.' }); //Not Found
   return res.status(200).send(subcategory);
@@ -46,6 +48,7 @@ router.get('/getAllSubCategories', auth, async (req, res) => {
 });
 
 router.get('/getSubCategoryBySubCategoryId', auth, async (req, res) => {
+  if(!mongoose.Types.ObjectId.isValid(req.query.subCategoryId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid subCategoryId.'}); 
     let subcategory = await SubCategory.findOne({ _id:req.query.subCategoryId});
     if(!subcategory) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'SubCategory not found.' });
     return res.status(200).send(subcategory);

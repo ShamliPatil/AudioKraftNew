@@ -19,6 +19,9 @@ router.post('/', auth, async (req, res) => {
 });
 
 router.get('/getAllUsersAddressByDealerId', auth, async (req, res) => {
+  if(!mongoose.Types.ObjectId.isValid(req.query.dealerId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid DealerId.'});
+  let dealer = await Dealership.findOne({_id:req.query.dealerId});
+  if(!dealer) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Dealer not found.' });
   let address = await UserAddress.find({dealerId : req.query.dealerId}).select(['_id', 'dealerId', 'dealerName','pincode','buildingName','area','city','state','landmark','addressTitle','contactNo']).sort('name');
   if(!address) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Brands not found.' }); //Not Found
   const user =await User.findOne({_id:req.user.id}).populate('defaultAddress');
@@ -34,8 +37,8 @@ router.get('/getAllUsersAddressByDealerId', auth, async (req, res) => {
 // });
 router.get('/getUsersAddressByAddressId', auth, async (req, res) => {
   addressId = req.query.addressId;
-  let address =  await UserAddress.findOne({ _id :addressId }).select(['_id', 'dealerId', 'dealerName','pincode','buildingName','area','city','state','landmark','addressTitle','contactNo']).sort('name');
   if(!mongoose.Types.ObjectId.isValid(addressId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid dealerId.'});
+  let address =  await UserAddress.findOne({ _id :addressId }).select(['_id', 'dealerId', 'dealerName','pincode','buildingName','area','city','state','landmark','addressTitle','contactNo']).sort('name');
   if(!address) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Address not found.' }); //Not Found
   return res.status(200).send(address);
 

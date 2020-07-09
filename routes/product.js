@@ -10,32 +10,36 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/', auth, async (req, res) => {
-    const { error } = validate(req.body); 
-    if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
-     //1) check brand exist or not
-    const brand = await Brand.findOne({ _id : req.body.brandId }).select('id name');
-    if(!brand) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'BrandId is not valid.' });
-   //1) check category exist or not
-    const category = await Category.findOne({ _id : req.body.categoryId }).select('id name');
-    if(!category) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'CategoryId is not valid.' });
-  //1) check subcategory exist or not
-    const subcategory = await SubCategory.findOne({ _id : req.body.subcategoryId }).select('id name');
-    if(!subcategory) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'subcategoryId is not valid.' });
-  //2) Check this category is exist under brand.
-     let product = await Product.findOne({ subcategoryId : subcategory.id, name : req.body.name }).select('name');
-     if(product) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'product already exits in this Category.'});
-
-    product = new Product(_.pick(req.body, [ 'name', 'imgUrl', 'description','colors','price','specifications','dealerPrice','quantity']));
-    //product.specifications = req.body.specifications;
-    product.subcategoryId = subcategory.id;
-    product.subcategoryName = subcategory.name;
-    product.categoryId=category.id,
-    product.categoryName=category.name,
-    product.brandId=brand.id,
-    product.brandName=brand.name
-    product.createdBy = req.user._id;
-    product = await product.save();
-    return res.status(200).send({ statusCode : 200,message : 'SubCategory Successfuly added.', data : product });
+    try{
+      const { error } = validate(req.body); 
+      if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
+       //1) check brand exist or not
+      const brand = await Brand.findOne({ _id : req.body.brandId }).select('id name');
+      if(!brand) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'BrandId is not valid.' });
+     //1) check category exist or not
+      const category = await Category.findOne({ _id : req.body.categoryId }).select('id name');
+      if(!category) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'CategoryId is not valid.' });
+    //1) check subcategory exist or not
+      const subcategory = await SubCategory.findOne({ _id : req.body.subcategoryId }).select('id name');
+      if(!subcategory) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'subcategoryId is not valid.' });
+    //2) Check this category is exist under brand.
+       let product = await Product.findOne({ subcategoryId : subcategory.id, name : req.body.name }).select('name');
+       if(product) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : 'product already exits in this Category.'});
+  
+      product = new Product(_.pick(req.body, [ 'name', 'imgUrl', 'description','colors','price','specifications','dealerPrice','quantity']));
+      //product.specifications = req.body.specifications;
+      product.subcategoryId = subcategory.id;
+      product.subcategoryName = subcategory.name;
+      product.categoryId=category.id,
+      product.categoryName=category.name,
+      product.brandId=brand.id,
+      product.brandName=brand.name
+      product.createdBy = req.user._id;
+      product = await product.save();
+      return res.status(200).send({ statusCode : 200,message : 'SubCategory Successfuly added.', data : product });
+    }catch(err){
+      return res.status(500).send({statusCode:500,statusMessage:err.message});
+    }
 });
 router.post('/setImageProduct', auth, async (req, res) => {
   const { error } = validateProductimgUrl(req.body); 
@@ -67,6 +71,8 @@ router.get('/getAllProducts', auth, async (req, res) => {
 router.get('/getSubCategoriesAndProductsByCategoryId', auth, async (req, res) => {
     const categoryId=req.query.categoryId;
     const brandId=req.query.brandId ;
+    if(!mongoose.Types.ObjectId.isValid(categoryId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid categoryId.'}); 
+    // if(!mongoose.Types.ObjectId.isValid(brandId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid categoryId.'}); 
     if(!categoryId || categoryId.length == 0)return res.status(400).send({ statusCode : 400, error : 'Bad request' , message : 'please provide categoryId.' });
     if(!brandId || brandId.length == 0)return res.status(400).send({ statusCode : 400, error : 'Bad request' , message : 'please provide brandId.' });
     const subCategory = await SubCategory.find({$and:[{ categoryId : categoryId },{ brandId : brandId}]}).select(['_id','name','imgUrl']).sort('name').skip(10*(0)).limit(10);
@@ -86,6 +92,7 @@ router.get('/getSubCategoriesAndProductsByCategoryId', auth, async (req, res) =>
  
  //get products by productId
  router.get('/getProductsByProductId', auth, async (req, res) => {
+  if(!mongoose.Types.ObjectId.isValid(req.query.productId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid productId.'}); 
   let product =  await Product.findOne({ _id : req.query.productId }).select(['_id','name','imgUrl','subcategoryName','isCustomizable','colors','price','quantity','specifications','description']).sort('name');
   //let category = await Category.find().select(['_id','name','imgUrl']).sort('name');
   if(!product) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Products not found.' }); //Not Found

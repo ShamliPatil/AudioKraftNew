@@ -33,7 +33,7 @@ router.patch('/updateCompanyOrEnabledStatusById', auth, async (req, res) => {
   if(!company) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Company not found please provide categoryId.' });
 
   if(req.body.name && req.body.name.length > 0 ) company.name = req.body.name;
-  company.enabled = req.body.enabled;
+  if(req.body.enabled) company.enabled = req.body.enabled
   company = await company.save();
   return res.status(200).send(company);
 });

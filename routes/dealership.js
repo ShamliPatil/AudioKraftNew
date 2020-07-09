@@ -46,9 +46,15 @@ router.patch('/enabledDealerById', auth, async (req, res) => {
 });
 
 router.get('/getDealerByDealerId', auth, async (req, res) => {
-  let dealer = await Dealership.findOne({_id:req.query.dealerId});
-  if(!dealer) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Dealer not found.' });
-  return res.status(200).send(dealer);
+  try{
+    if(!mongoose.Types.ObjectId.isValid(req.query.dealerId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid DealerId.'});
+    let dealer = await Dealership.findOne({_id:req.query.dealerId});
+    if(!dealer) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Dealer not found.' });
+    return res.status(200).send(dealer);
+  }catch(e){
+    return res.status(500).send({ statusCode : 500, error : e.message, message : 'Something went wrong.' });
+  }
+  
 });
 
 router.delete('/deleteDealerByDealerId', auth, async (req, res) => {

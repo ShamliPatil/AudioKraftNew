@@ -48,6 +48,7 @@ router.get('/getAllBrands', auth, async (req, res) => {
 });
 
 router.get('/getBrandBrandId', auth, async (req, res) => {
+  if(!mongoose.Types.ObjectId.isValid(req.query.brandId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid brandId.'}); 
   let brand = await Brand.findOne({_id:req.query.brandId}).populate('categories','name');
   if(!brand) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Brand not found.' });
   return res.status(200).send(brand);

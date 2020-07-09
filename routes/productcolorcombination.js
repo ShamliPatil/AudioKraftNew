@@ -111,8 +111,12 @@ router.patch('/updateProductColorCombinationOrEnabledStatusById',auth, async (re
   } 
   if(req.body.colorMajor && req.body.colorMajor.length > 0 ) productColorCombination.colorMajor = req.body.colorMajor;
   if(req.body.colorMinor && req.body.colorMinor.length > 0 ) productColorCombination.colorMinor = req.body.colorMinor;
-  productColorCombination.initalStock = req.body.initalStock;
-  productColorCombination.enabled = req.body.enabled;
+  if(req.body.initalStock) productColorCombination.initalStock = req.body.initalStock;
+  if(req.body.enabled == undefined){
+    productColorCombination.enabled = productColorCombination.enabled
+  }else{
+    productColorCombination.enabled = req.body.enabled;
+  } 
   productColorCombination = await productColorCombination.save();
   return res.status(200).send(productColorCombination);
 });

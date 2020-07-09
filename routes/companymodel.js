@@ -48,12 +48,14 @@ router.get('/getAllCompanieModels',auth, async (req, res) => {
 });
 router.patch('/updateCompanyModelOrEnabledStatusById',auth,async (req, res) => {
   const { error } = validateCompanyModelUpdate(req.body); 
+  companymodelId = req.body.companymodelId;
+if(!mongoose.Types.ObjectId.isValid(companymodelId)) return res.status(400).send({statusCode:400,error:'Bad Request',message:'Please provide valid companymodelId.'});
   if (error) return res.status(400).send({ statusCode : 400, error : 'Bad Request' , message : error.message });
-  let companymodel = await CompanyModel.findOne({_id:req.body.companymodelId});
-  if(!companymodel) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Companymodel not found please provide categoryId.' });
+  let companymodel = await CompanyModel.findOne({ _id : companymodelId});
+  if(!companymodel) return res.status(404).send({ statusCode : 404, error : 'Not Found' , message : 'Companymodel not found please provide CompanymodelId.' });
   if(req.body.name && req.body.name.length > 0 ) companymodel.name = req.body.name;
   if(req.body.companyId && req.body.companyId.length > 0 ) companymodel.companyId = req.body.companyId;
-  companymodel.enabled = req.body.enabled;
+  if(req.body.enabled)companymodel.enabled = req.body.enabled;
  
   companymodel = await companymodel.save();
   return res.status(200).send(companymodel);
